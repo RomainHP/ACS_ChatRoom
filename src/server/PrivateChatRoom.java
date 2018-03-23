@@ -1,24 +1,34 @@
 package server;
-import client.ListenerImpl;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
+
+import client.Listener;
 import exception.MaxConnectionException;
+import exception.NicknameNotAvailableException;
 import exception.WrongPasswordException;
 
 public class PrivateChatRoom extends ChatRoom {
 	
 	private String password;
 
-	public PrivateChatRoom(String aName, String aPassword) {
-		super(aName);
+	public PrivateChatRoom(String aPassword) {
+		super();
 		this.password = aPassword;
 	}
 
-	public PrivateChatRoom(String aName, int aMax_connection, String aPassword) {
-		super(aName,aMax_connection);
+	public PrivateChatRoom(int aMax_connection, String aPassword) {
+		super(aMax_connection);
 		this.password = aPassword;
 	}
+	
+	@Override
+	synchronized public String connect(Listener aListener, String aNickname) throws WrongPasswordException {
+		throw new WrongPasswordException();
+	}
 
-	public void connect(ListenerImpl aListener, String aNickname, String aPassword) throws WrongPasswordException, MaxConnectionException {
+	@Override
+	synchronized public String connect(Listener aListener, String aNickname, String aPassword) throws WrongPasswordException, MaxConnectionException, RemoteException, NicknameNotAvailableException, MalformedURLException {
 		if (!aPassword.equals(password)) throw new WrongPasswordException();
-		super.connect(aListener, aNickname);
+		return super.connect(aListener, aNickname);
 	}
 }

@@ -1,11 +1,15 @@
 package server;
+import java.io.IOException;
+import java.rmi.Remote;
 import java.util.List;
 
-public interface Session {
+public interface Session extends Remote {
 
-	public void disconnect();
+	abstract void disconnect();
 
-	public void sendMessage(String aMsg);
+	abstract void sendMessage(String aMsg);
+	
+	abstract void receiveMessage(String aMsg) throws IOException;
 
-	public List<String> getAllUsers();
+	abstract List<String> getAllUsers();
 }

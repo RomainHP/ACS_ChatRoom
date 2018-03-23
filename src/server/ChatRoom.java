@@ -1,52 +1,73 @@
 package server;
+
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import client.ListenerImpl;
+import client.Listener;
 import exception.MaxConnectionException;
+import exception.NicknameNotAvailableException;
+import exception.WrongPasswordException;
 
 public class ChatRoom {
-	
+
 	private int max_connection = 10;
-	
+
 	/**
 	 * Hashmap contenant pour chaque session les pseudos associés
 	 */
-	private Map<String,Session> clients;
-	
-	private String name;
+	private Map<String, Session> clients;
 
-	public ChatRoom(String aName) {
-		throw new UnsupportedOperationException();
-	}
-
-	public ChatRoom(String aName, int aMax_connection) {
-		this.max_connection=aMax_connection;
-		this.name = name;
+	public ChatRoom() {
 		this.clients = new HashMap<>();
 	}
 
+	public ChatRoom(int aMax_connection) {
+		this();
+		this.max_connection = aMax_connection;
+	}
+
 	public void disconnect(String aNickname) {
-		throw new UnsupportedOperationException();
+		this.clients.remove(aNickname);
 	}
 
 	public void sendMessage(String aMsg, String aNickname) {
-		throw new UnsupportedOperationException();
+		//Broadcast to all clients
+		Iterator<Session> it = clients.values().iterator();
+		while (it.hasNext()) {
+			it.next().sendMessage(aNickname + " : " + aMsg);
+		}
 	}
 
-	public Session connect(ListenerImpl aListener, String aNickname) throws MaxConnectionException {
-		if (clients.size()>=max_connection) throw new MaxConnectionException();
-		return null;
+	synchronized public String connect(Listener aListener, String aNickname) throws MaxConnectionException, WrongPasswordException,  NicknameNotAvailableException, RemoteException, MalformedURLException{
+		if (clients.size() >= max_connection)
+			throw new MaxConnectionException();
+		if (!this.verifyNickname(aNickname)) {
+			Session session = new SessionImpl(this, aListener, aNickname);
+			//rebind client session
+			String name = "client_"+aNickname;
+		    Naming.rebind(name,session);
+			this.clients.put(aNickname, session);
+			return name;
+		}else {
+			throw new NicknameNotAvailableException();
+		}
+	}
+	
+	synchronized public String connect(Listener aListener, String aNickname, String aPassword) throws MaxConnectionException, WrongPasswordException,  NicknameNotAvailableException, RemoteException, MalformedURLException{
+		return this.connect(aListener, aNickname);
 	}
 
 	public boolean verifyNickname(String aNickname) {
 		return !clients.containsKey(aNickname);
 	}
-	
-	public List<String> getAllUsers(){
+
+	public List<String> getAllUsers() {
 		List<String> res = new ArrayList<>();
 		Iterator<String> it = this.clients.keySet().iterator();
 		while (it.hasNext()) {

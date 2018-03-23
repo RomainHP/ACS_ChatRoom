@@ -1,5 +1,9 @@
 package client;
-public interface Listener {
 
-	public void receiveMessage(String aMsg);
+import java.io.IOException;
+import java.rmi.Remote;
+
+public interface Listener extends Remote{
+
+	public void receiveMessage(String aMsg) throws IOException;
 }

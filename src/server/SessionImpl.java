@@ -1,28 +1,41 @@
 package server;
+
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
 import client.Listener;
-import client.ListenerImpl;
 
-public class SessionImpl implements Session {
+public class SessionImpl extends UnicastRemoteObject implements Session {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9184666239790872778L;
 	private String nickname;
 	private ChatRoom chatroom;
-	private ListenerImpl listener;
-	public Listener _unnamed_Listener_;
+	private Listener listener;
 
-	public SessionImpl(ChatRoom aChatroom, ListenerImpl aListener, String aNickname) {
-		throw new UnsupportedOperationException();
+	public SessionImpl(ChatRoom aChatroom, Listener aListener, String aNickname) throws RemoteException {
+		this.chatroom = aChatroom;
+		this.listener = aListener;
+		this.nickname = aNickname;
 	}
 
 	public void disconnect() {
-		throw new UnsupportedOperationException();
+		this.chatroom.disconnect(this.nickname);
 	}
 
 	public void sendMessage(String aMsg) {
-		throw new UnsupportedOperationException();
+		this.chatroom.sendMessage(aMsg, this.nickname);
+	}
+	
+	public void receiveMessage(String aMsg) throws IOException {
+		this.listener.receiveMessage(aMsg);
 	}
 
 	public List<String> getAllUsers() {
-		throw new UnsupportedOperationException();
+		return this.chatroom.getAllUsers();
 	}
 }
