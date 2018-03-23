@@ -1,14 +1,17 @@
-import java.util.Vector;
+package server;
+import java.util.HashMap;
+import java.util.Map;
+
+import client.ListenerImpl;
 
 public class LoginImpl implements Login {
 	/**
 	 * Hashmap contenant pour chaque chatroom le nom correspondant
 	 */
-	private Object _hashMap<String__ChatRoom>_chatrooms;
-	public Vector<ChatRoom> _unnamed_ChatRoom_ = new Vector<ChatRoom>();
+	private Map<String,ChatRoom> chatrooms;
 
 	public LoginImpl() {
-		throw new UnsupportedOperationException();
+		this.chatrooms = new HashMap<>();
 	}
 
 	public Session connect(String aNickname, ListenerImpl aListener, String aChatroom) {

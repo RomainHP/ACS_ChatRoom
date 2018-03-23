@@ -1,8 +1,5 @@
+package client;
 public class Client {
-	private Listener _listener;
-	private Session _session;
-	public Listener _unnamed_Listener_;
-	public Session _unnamed_Session_;
 
 	public void main() {
 		throw new UnsupportedOperationException();

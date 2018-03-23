@@ -1,7 +1,13 @@
+package server;
+import java.util.List;
+
+import client.Listener;
+import client.ListenerImpl;
+
 public class SessionImpl implements Session {
-	private String _nickname;
-	private ChatRoom _chatroom;
-	private ListenerImpl _listener;
+	private String nickname;
+	private ChatRoom chatroom;
+	private ListenerImpl listener;
 	public Listener _unnamed_Listener_;
 
 	public SessionImpl(ChatRoom aChatroom, ListenerImpl aListener, String aNickname) {
@@ -16,7 +22,7 @@ public class SessionImpl implements Session {
 		throw new UnsupportedOperationException();
 	}
 
-	public String getAllUsers() {
+	public List<String> getAllUsers() {
 		throw new UnsupportedOperationException();
 	}
 }
