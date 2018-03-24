@@ -21,6 +21,8 @@ public class Client {
 	private Listener listener;
 	
 	private Login login;
+	
+	public static String server_name;
 
 	public static String name_rebind = "listener_";
 
@@ -31,7 +33,9 @@ public class Client {
 		}
 		try {
 			// Login
-			Login log = (Login) Naming.lookup("login");
+			server_name = args[0];
+			String url = "rmi://"+server_name+"/login";
+			Login log = (Login) Naming.lookup(url);
 			Client client = new Client(log);
 		} catch (Exception e) {
 			System.out.println(e);
@@ -73,7 +77,8 @@ public class Client {
 	public void connect(String pseudo, String chat) throws RemoteException, MaxConnectionException, WrongPasswordException,
 			NicknameNotAvailableException, MalformedURLException, NotBoundException {
 		String name = Client.name_rebind + chat + "_" + pseudo;
-		this.session = (Session) Naming.lookup(this.login.connect(pseudo, name, chat));
+		String url = "rmi://"+server_name+"/" + this.login.connect(pseudo, name, chat);
+		this.session = (Session) Naming.lookup(url);
 	}
 
 	public void disconnect() throws RemoteException {

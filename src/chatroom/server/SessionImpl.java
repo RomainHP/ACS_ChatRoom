@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
+import chatroom.client.Client;
 import chatroom.client.Listener;
 
 public class SessionImpl extends UnicastRemoteObject implements Session {
@@ -22,7 +23,8 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
 
 	public SessionImpl(ChatRoom aChatroom, String aListener, String aNickname) throws RemoteException, MalformedURLException, NotBoundException {
 		this.chatroom = aChatroom;
-		this.listener = (Listener)Naming.lookup(aListener);
+		String url = "rmi://"+Client.server_name+"/" + aListener;
+		this.listener = (Listener)Naming.lookup(url);
 		this.nickname = aNickname;
 	}
 
