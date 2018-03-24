@@ -1,4 +1,4 @@
-package exception;
+package chatroom.exception;
 
 public class MaxConnectionException extends Exception {
 

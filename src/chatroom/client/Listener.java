@@ -1,4 +1,4 @@
-package client;
+package chatroom.client;
 
 import java.io.IOException;
 import java.rmi.Remote;

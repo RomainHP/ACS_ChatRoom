@@ -1,11 +1,14 @@
-package server;
+package chatroom.server;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
-import client.Listener;
+import chatroom.client.Listener;
 
 public class SessionImpl extends UnicastRemoteObject implements Session {
 
@@ -17,25 +20,25 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
 	private ChatRoom chatroom;
 	private Listener listener;
 
-	public SessionImpl(ChatRoom aChatroom, Listener aListener, String aNickname) throws RemoteException {
+	public SessionImpl(ChatRoom aChatroom, String aListener, String aNickname) throws RemoteException, MalformedURLException, NotBoundException {
 		this.chatroom = aChatroom;
-		this.listener = aListener;
+		this.listener = (Listener)Naming.lookup(aListener);
 		this.nickname = aNickname;
 	}
 
-	public void disconnect() {
+	public void disconnect() throws RemoteException {
 		this.chatroom.disconnect(this.nickname);
 	}
 
-	public void sendMessage(String aMsg) {
+	public void sendMessage(String aMsg) throws RemoteException {
 		this.chatroom.sendMessage(aMsg, this.nickname);
 	}
 	
-	public void receiveMessage(String aMsg) throws IOException {
+	public void receiveMessage(String aMsg) throws IOException, RemoteException {
 		this.listener.receiveMessage(aMsg);
 	}
 
-	public List<String> getAllUsers() {
+	public List<String> getAllUsers() throws RemoteException {
 		return this.chatroom.getAllUsers();
 	}
 }

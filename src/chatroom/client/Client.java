@@ -1,5 +1,6 @@
-package client;
+package chatroom.client;
 
+import java.awt.EventQueue;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -7,11 +8,12 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Scanner;
 
-import exception.MaxConnectionException;
-import exception.NicknameNotAvailableException;
-import exception.WrongPasswordException;
-import server.Login;
-import server.Session;
+import chatroom.client.ui.LoginFrame;
+import chatroom.exception.MaxConnectionException;
+import chatroom.exception.NicknameNotAvailableException;
+import chatroom.exception.WrongPasswordException;
+import chatroom.server.Login;
+import chatroom.server.Session;
 
 public class Client {
 
@@ -19,15 +21,16 @@ public class Client {
 
 	private Listener listener;
 
-	public static final String name_rebind = "listener";
+	public static String name_rebind = "listener_";
 
 	public static void main(String[] args) {
 		if (args.length <= 0) {
-			System.err.println("manque l'argument du hostname du server");
+			System.err.println("Il manque l'argument du hostname du server");
 			return;
 		}
 		try {
-			Client client = new Client();
+			String[] chats = {"chat1", "chat2"};
+			Client client = new Client(chats);
 			// Login
 			Login log = (Login) Naming.lookup(args[0]);
 			client.connect(log);
@@ -35,12 +38,22 @@ public class Client {
 			client.listen();
 		} catch (Exception e) {
 			System.out.println(e);
+			System.exit(0);
 		}
 	}
 
-	public Client() throws RemoteException {
-		//interface console
+	public Client(String[] chats) throws RemoteException {
 		this.listener = new ListenerImpl(System.out);
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					LoginFrame logframe = new LoginFrame(chats);
+					logframe.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	public void listen() {
@@ -65,15 +78,16 @@ public class Client {
 		String chat = sc.nextLine();
 		System.out.println("Pseudo ?");
 		String pseudo = sc.nextLine();
-		this.session = (Session) Naming.lookup(log.connect(pseudo, listener, chat));
+		Client.name_rebind += chat + "_" + pseudo;
+		this.session = (Session) Naming.lookup(log.connect(pseudo, Client.name_rebind, chat));
 		sc.close();
 	}
 
-	public void disconnect() {
+	public void disconnect() throws RemoteException {
 		if (this.session!=null) this.session.disconnect();
 	}
 
-	public void sendMessage(String aMsg) {
+	public void sendMessage(String aMsg) throws RemoteException {
 		if (this.session!=null) this.session.sendMessage(aMsg);
 	}
 }

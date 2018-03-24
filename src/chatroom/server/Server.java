@@ -1,4 +1,4 @@
-package server;
+package chatroom.server;
 
 import java.rmi.Naming;
 import java.rmi.Remote;
@@ -7,7 +7,7 @@ public class Server {
 
 	public static final String rebind_name = "login";
 	
-	public void main() {
+	public static void main(String[] args) {
 		Login log=null;
 		try {
 			System.out.println("Creation de l'objet.");
@@ -17,6 +17,7 @@ public class Server {
 			System.out.println("serveur operationnel.");
 		} catch (Exception e) {
 			System.out.println(e);
+			System.exit(0);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package exception;
+package chatroom.exception;
 
 public class NicknameNotAvailableException extends Exception {
 

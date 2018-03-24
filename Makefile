@@ -3,23 +3,23 @@ JAVAC=javac
 all: compile jarServeur jarClient clean
 	
 compile : 
-	$(JAVAC) distant_calculator/*.java
+	$(JAVAC) chatroom/*.java
 
 jarServeur:    
 	@echo "Manifest-Version: 1.0" > manifest.txt
 	@echo "Class-Path: ." >> manifest.txt
-	@echo "Main-Class: distant_calculator.Server" >> manifest.txt
+	@echo "Main-Class: chatroom.server.Server" >> manifest.txt
 	@echo "" >> manifest.txt
 
-	jar -cmf manifest.txt Server.jar distant_calculator/*.class
+	jar -cmf manifest.txt Server.jar chatroom/server/*.class
     
 jarClient:    
 	@echo "Manifest-Version: 1.0" > manifest.txt
 	@echo "Class-Path: ." >> manifest.txt
-	@echo "Main-Class: distant_calculator.Client" >> manifest.txt
+	@echo "Main-Class: chatroom.client.Client" >> manifest.txt
 	@echo "" >> manifest.txt
 	
-	jar -cmf manifest.txt Client.jar distant_calculator/*.class
+	jar -cmf manifest.txt Client.jar chatroom/client/*.class
 
 clean:
 	rm -rf *.class

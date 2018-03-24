@@ -1,7 +1,8 @@
-package server;
+package chatroom.server;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,10 +10,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import client.Listener;
-import exception.MaxConnectionException;
-import exception.NicknameNotAvailableException;
-import exception.WrongPasswordException;
+import chatroom.exception.MaxConnectionException;
+import chatroom.exception.NicknameNotAvailableException;
+import chatroom.exception.WrongPasswordException;
 
 public class ChatRoom {
 
@@ -36,30 +36,34 @@ public class ChatRoom {
 		this.clients.remove(aNickname);
 	}
 
-	public void sendMessage(String aMsg, String aNickname) {
-		//Broadcast to all clients
+	public void sendMessage(String aMsg, String aNickname) throws RemoteException {
+		// Broadcast to all clients
 		Iterator<Session> it = clients.values().iterator();
 		while (it.hasNext()) {
 			it.next().sendMessage(aNickname + " : " + aMsg);
 		}
 	}
 
-	synchronized public String connect(Listener aListener, String aNickname) throws MaxConnectionException, WrongPasswordException,  NicknameNotAvailableException, RemoteException, MalformedURLException{
+	synchronized public String connect(String aListener, String aNickname)
+			throws MaxConnectionException, WrongPasswordException, NicknameNotAvailableException, RemoteException,
+			MalformedURLException, NotBoundException {
 		if (clients.size() >= max_connection)
 			throw new MaxConnectionException();
 		if (!this.verifyNickname(aNickname)) {
 			Session session = new SessionImpl(this, aListener, aNickname);
-			//rebind client session
-			String name = "client_"+aNickname;
-		    Naming.rebind(name,session);
+			// rebind client session
+			String name = "client_" + aNickname;
+			Naming.rebind(name, session);
 			this.clients.put(aNickname, session);
 			return name;
-		}else {
+		} else {
 			throw new NicknameNotAvailableException();
 		}
 	}
-	
-	synchronized public String connect(Listener aListener, String aNickname, String aPassword) throws MaxConnectionException, WrongPasswordException,  NicknameNotAvailableException, RemoteException, MalformedURLException{
+
+	synchronized public String connect(String aListener, String aNickname, String aPassword)
+			throws MaxConnectionException, WrongPasswordException, NicknameNotAvailableException, RemoteException,
+			MalformedURLException, NotBoundException {
 		return this.connect(aListener, aNickname);
 	}
 

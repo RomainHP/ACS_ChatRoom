@@ -1,4 +1,4 @@
-package client.ui;
+package chatroom.client.ui;
 
 import java.awt.Dimension;
 
@@ -25,6 +25,10 @@ public class ChatFrame extends JFrame{
 	public ChatFrame(String title) {
 		super("Chatroom : " + title);
 		this.setPreferredSize(new Dimension(400,300));
+		this.textToSend = new JTextArea();
+		this.textReceived = new JTextArea();
+		this.users = new JList<>();
+		this.validate = new JButton("Validate");
 	}
 
 }
