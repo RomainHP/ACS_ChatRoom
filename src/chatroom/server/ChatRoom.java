@@ -49,7 +49,7 @@ public class ChatRoom {
 			MalformedURLException, NotBoundException {
 		if (clients.size() >= max_connection)
 			throw new MaxConnectionException();
-		if (!this.verifyNickname(aNickname)) {
+		if (this.verifyNickname(aNickname)) {
 			Session session = new SessionImpl(this, aListener, aNickname);
 			// rebind client session
 			String name = "client_" + aNickname;

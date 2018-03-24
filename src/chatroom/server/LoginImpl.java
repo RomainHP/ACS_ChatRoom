@@ -4,10 +4,8 @@ import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import chatroom.exception.MaxConnectionException;
@@ -30,29 +28,33 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
 	}
 
 	@Override
-	public String connect(String aNickname, String aListener, String aChatroom) 
-			throws RemoteException, MaxConnectionException, WrongPasswordException, NicknameNotAvailableException, MalformedURLException, NotBoundException 
-	{
-		if (!this.chatrooms.containsKey(aChatroom)) this.chatrooms.put(aChatroom, new ChatRoom());
+	public String connect(String aNickname, String aListener, String aChatroom)
+			throws RemoteException, MaxConnectionException, WrongPasswordException, NicknameNotAvailableException,
+			MalformedURLException, NotBoundException {
+		if (!this.chatrooms.containsKey(aChatroom))
+			this.chatrooms.put(aChatroom, new ChatRoom());
 		ChatRoom chat = this.chatrooms.get(aChatroom);
 		return chat.connect(aListener, aNickname);
 	}
 
 	@Override
-	public String connect(String aNickname, String aListener, String aChatroom, String aPassword) 
-			throws RemoteException, MaxConnectionException, WrongPasswordException, NicknameNotAvailableException, MalformedURLException, NotBoundException 
-	{
-		if (!this.chatrooms.containsKey(aChatroom)) this.chatrooms.put(aChatroom, new ChatRoom());
+	public String connect(String aNickname, String aListener, String aChatroom, String aPassword)
+			throws RemoteException, MaxConnectionException, WrongPasswordException, NicknameNotAvailableException,
+			MalformedURLException, NotBoundException {
+		if (!this.chatrooms.containsKey(aChatroom))
+			this.chatrooms.put(aChatroom, new ChatRoom());
 		ChatRoom chat = this.chatrooms.get(aChatroom);
 		return chat.connect(aListener, aNickname, aPassword);
 	}
 
 	@Override
-	public List<String> getAllChatRoom() throws RemoteException {
-		List<String> res = new ArrayList<>();
+	public String[] getAllChatRoom() throws RemoteException {
+		String[] res = new String[this.chatrooms.size()];
 		Iterator<String> it = this.chatrooms.keySet().iterator();
+		int i = 0;
 		while (it.hasNext()) {
-			res.add(it.next());
+			res[i] = it.next();
+			i++;
 		}
 		return res;
 	}

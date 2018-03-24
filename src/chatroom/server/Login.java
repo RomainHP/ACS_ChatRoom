@@ -4,7 +4,6 @@ import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.List;
 
 import chatroom.exception.MaxConnectionException;
 import chatroom.exception.NicknameNotAvailableException;
@@ -20,5 +19,5 @@ public interface Login extends Remote {
 			throws RemoteException, MaxConnectionException, WrongPasswordException, NicknameNotAvailableException,
 			MalformedURLException, NotBoundException;
 
-	abstract List<String> getAllChatRoom() throws RemoteException;
+	abstract String[] getAllChatRoom() throws RemoteException;
 }

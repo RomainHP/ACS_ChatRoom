@@ -1,9 +1,18 @@
 package chatroom.client.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 
 import javax.swing.*;
+
+import chatroom.client.Client;
+import chatroom.exception.MaxConnectionException;
+import chatroom.exception.NicknameNotAvailableException;
+import chatroom.exception.WrongPasswordException;
 
 public class LoginFrame extends JFrame{
 
@@ -41,7 +50,7 @@ public class LoginFrame extends JFrame{
 		this.pack();
 	}*/
 	
-	public LoginFrame(String[] chats) {
+	public LoginFrame(String[] chats, Client client) {
 		super("Login");
 		this.setBounds(100, 100, 444, 300);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -86,6 +95,26 @@ public class LoginFrame extends JFrame{
 		JTextField textField_1 = new JTextField();
 		verticalBox_2.add(textField_1);
 		textField_1.setColumns(10);
+		
+		btnConfirm.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String pseudo = textField.getText();
+				String chat = "";
+				if (tabbedPane.areFocusTraversalKeysSet(0)) {
+					chat = list_1.getSelectedValue();
+				}else {
+					chat = textField_1.getText();
+				}
+				try {
+					client.connect(pseudo, chat);
+				} catch (RemoteException | MalformedURLException | MaxConnectionException | WrongPasswordException
+						| NicknameNotAvailableException | NotBoundException e) {
+					e.printStackTrace();
+					System.exit(0);
+				}
+			}
+		});
 	}
 
 }
