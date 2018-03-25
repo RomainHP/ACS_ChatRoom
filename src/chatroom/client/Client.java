@@ -1,13 +1,12 @@
 package chatroom.client;
 
-import java.awt.EventQueue;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import chatroom.client.ui.LoginFrame;
 import chatroom.exception.MaxConnectionException;
 import chatroom.exception.NicknameNotAvailableException;
 import chatroom.exception.WrongPasswordException;
@@ -19,43 +18,16 @@ public class Client {
 	private Session session;
 
 	private Listener listener;
-	
+
 	private Login login;
-	
+
 	public static String server_name;
 
 	public static String name_rebind = "listener_";
 
-	public static void main(String[] args) {
-		if (args.length <= 0) {
-			System.err.println("Il manque l'argument du hostname du server");
-			return;
-		}
-		try {
-			// Login
-			server_name = args[0];
-			String url = "rmi://"+server_name+"/login";
-			Login log = (Login) Naming.lookup(url);
-			Client client = new Client(log);
-		} catch (Exception e) {
-			System.out.println(e);
-			System.exit(0);
-		}
-	}
-
-	public Client(Login log) throws RemoteException {
+	public Client(Login log, OutputStream out) throws RemoteException {
 		this.login = log;
-		this.listener = new ListenerImpl(System.out);
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					LoginFrame logframe = new LoginFrame(log.getAllChatRoom(), Client.this);
-					logframe.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		this.listener = new ListenerImpl(out);
 	}
 
 	public void listen() {
@@ -74,10 +46,10 @@ public class Client {
 		t.start();
 	}
 
-	public void connect(String pseudo, String chat) throws RemoteException, MaxConnectionException, WrongPasswordException,
-			NicknameNotAvailableException, MalformedURLException, NotBoundException {
+	public void connect(String pseudo, String chat) throws RemoteException, MaxConnectionException,
+			WrongPasswordException, NicknameNotAvailableException, MalformedURLException, NotBoundException {
 		String name = Client.name_rebind + chat + "_" + pseudo;
-		String url = "rmi://"+server_name+"/" + this.login.connect(pseudo, name, chat);
+		String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat);
 		this.session = (Session) Naming.lookup(url);
 	}
 

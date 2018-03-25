@@ -31,6 +31,7 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
 	public String connect(String aNickname, String aListener, String aChatroom)
 			throws RemoteException, MaxConnectionException, WrongPasswordException, NicknameNotAvailableException,
 			MalformedURLException, NotBoundException {
+		System.out.println("Connexion");
 		if (!this.chatrooms.containsKey(aChatroom))
 			this.chatrooms.put(aChatroom, new ChatRoom());
 		ChatRoom chat = this.chatrooms.get(aChatroom);
