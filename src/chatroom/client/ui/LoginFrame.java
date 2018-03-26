@@ -48,8 +48,6 @@ public class LoginFrame extends JFrame {
 	 * 
 	 * this.setPreferredSize(new Dimension(400,300)); this.pack(); }
 	 */
-	
-	private ChatFrame chat;
 
 	public LoginFrame(String[] chats, Client client) {
 		super("Login");
@@ -62,9 +60,9 @@ public class LoginFrame extends JFrame {
 		JLabel lblPseudo = new JLabel("Nickname :");
 		verticalBox.add(lblPseudo);
 
-		JTextField textField = new JTextField();
-		verticalBox.add(textField);
-		textField.setColumns(10);
+		JTextField pseudoTextField = new JTextField();
+		verticalBox.add(pseudoTextField);
+		pseudoTextField.setColumns(10);
 
 		JLabel lblLogin = new JLabel("Login");
 		lblLogin.setHorizontalAlignment(SwingConstants.CENTER);
@@ -73,43 +71,51 @@ public class LoginFrame extends JFrame {
 		JButton btnConfirm = new JButton("Confirm");
 		this.getContentPane().add(btnConfirm, BorderLayout.SOUTH);
 
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		this.getContentPane().add(tabbedPane, BorderLayout.CENTER);
+		JTabbedPane tabPane = new JTabbedPane(JTabbedPane.TOP);
+		this.getContentPane().add(tabPane, BorderLayout.CENTER);
 
-		Box verticalBox_1 = Box.createVerticalBox();
-		tabbedPane.addTab("Join", null, verticalBox_1, null);
+		Box chatroomScrollPane = Box.createVerticalBox();
+		tabPane.addTab("Join", null, chatroomScrollPane, null);
 
 		JLabel lblChatroom = new JLabel("ChatRoom :");
-		verticalBox_1.add(lblChatroom);
+		chatroomScrollPane.add(lblChatroom);
 
-		JList<String> list_1 = new JList<>(chats);
+		JList<String> chatroomsList = new JList<>(chats);
 
-		JScrollPane scrollPane = new JScrollPane(list_1);
-		verticalBox_1.add(scrollPane);
+		JScrollPane scrollPane = new JScrollPane(chatroomsList);
+		chatroomScrollPane.add(scrollPane);
 
 		Box verticalBox_2 = Box.createVerticalBox();
-		tabbedPane.addTab("Create", null, verticalBox_2, null);
+		tabPane.addTab("Create", null, verticalBox_2, null);
 
-		JLabel label = new JLabel("ChatRoom :");
-		verticalBox_2.add(label);
+		JLabel chatroomLabel = new JLabel("ChatRoom :");
+		verticalBox_2.add(chatroomLabel);
 
-		JTextField textField_1 = new JTextField();
-		verticalBox_2.add(textField_1);
-		textField_1.setColumns(10);
+		JTextField chatroomTextField = new JTextField();
+		verticalBox_2.add(chatroomTextField);
+		chatroomTextField.setColumns(10);
 
-		//launch the chat
+		JLabel lblPassword = new JLabel("Password :");
+		verticalBox_2.add(lblPassword);
+
+		JTextField passwordTextField = new JTextField();
+		passwordTextField.setColumns(10);
+		verticalBox_2.add(passwordTextField);
+
+		// launch the chat
 		btnConfirm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				String pseudo = textField.getText();
+				String pseudo = pseudoTextField.getText();
 				String chat = "";
-				if (tabbedPane.areFocusTraversalKeysSet(0)) {
-					chat = list_1.getSelectedValue();
+				if (tabPane.areFocusTraversalKeysSet(0)) {
+					chat = chatroomsList.getSelectedValue();
 				} else {
-					chat = textField_1.getText();
+					chat = chatroomTextField.getText();
 				}
+				String password = passwordTextField.getText();
 				try {
-					client.connect(pseudo, chat);
+					client.connect(pseudo, chat, password);
 				} catch (RemoteException | MalformedURLException | MaxConnectionException | WrongPasswordException
 						| NicknameNotAvailableException | NotBoundException e) {
 					ExceptionPopup.showError(e);
@@ -128,7 +134,7 @@ public class LoginFrame extends JFrame {
 			Client.server_name = args[0];
 			String url = "rmi://" + Client.server_name + "/login";
 			Login log = (Login) Naming.lookup(url);
-			Client client = new Client(log,System.out);
+			Client client = new Client(log, System.out);
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					try {

@@ -21,10 +21,11 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
 	private ChatRoom chatroom;
 	private Listener listener;
 
-	public SessionImpl(ChatRoom aChatroom, String aListener, String aNickname) throws RemoteException, MalformedURLException, NotBoundException {
+	public SessionImpl(ChatRoom aChatroom, String aListener, String aNickname)
+			throws RemoteException, MalformedURLException, NotBoundException {
 		this.chatroom = aChatroom;
-		String url = "rmi://"+Client.server_name+"/" + aListener;
-		this.listener = (Listener)Naming.lookup(url);
+		String url = "rmi://" + Client.server_name + "/" + aListener;
+		this.listener = (Listener) Naming.lookup(url);
 		this.nickname = aNickname;
 	}
 
@@ -35,7 +36,7 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
 	public void sendMessage(String aMsg) throws RemoteException {
 		this.chatroom.sendMessage(aMsg, this.nickname);
 	}
-	
+
 	public void receiveMessage(String aMsg) throws IOException, RemoteException {
 		this.listener.receiveMessage(aMsg);
 	}

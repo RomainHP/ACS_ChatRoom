@@ -48,8 +48,13 @@ public class Client {
 
 	public void connect(String pseudo, String chat) throws RemoteException, MaxConnectionException,
 			WrongPasswordException, NicknameNotAvailableException, MalformedURLException, NotBoundException {
+		this.connect(pseudo, chat, "");
+	}
+
+	public void connect(String pseudo, String chat, String password) throws RemoteException, MaxConnectionException,
+			WrongPasswordException, NicknameNotAvailableException, MalformedURLException, NotBoundException {
 		String name = Client.name_rebind + chat + "_" + pseudo;
-		String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat);
+		String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat, password);
 		this.session = (Session) Naming.lookup(url);
 	}
 
