@@ -1,9 +1,13 @@
 package chatroom.client;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 public interface Listener extends Remote {
+        
+        abstract void setOutput(OutputStream out) throws RemoteException;
 
-	public void receiveMessage(String aMsg) throws IOException;
+	abstract void receiveMessage(String aMsg) throws RemoteException, IOException;
 }

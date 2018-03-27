@@ -16,6 +16,7 @@ import chatroom.exception.WrongPasswordException;
 import chatroom.server.Login;
 import chatroom.server.Session;
 import java.awt.EventQueue;
+import java.io.IOException;
 
 public class Client {
 
@@ -29,10 +30,14 @@ public class Client {
 
 	public static String name_rebind = "listener_";
 
-	public Client(Login log, OutputStream out) throws RemoteException {
+	public Client(Login log) throws RemoteException {
 		this.login = log;
-		this.listener = new ListenerImpl(out);
+		this.listener = new ListenerImpl(System.out);
 	}
+        
+        public void setOutput(OutputStream out) throws RemoteException{
+            this.listener.setOutput(out);
+        }
 
 	public void listen(String name) {
 		/*Thread t = new Thread() {
@@ -74,7 +79,7 @@ public class Client {
 			this.session.disconnect();
 	}
 
-	public void sendMessage(String aMsg) throws RemoteException {
+	public void sendMessage(String aMsg) throws RemoteException, IOException {
 		if (this.session != null)
 			this.session.sendMessage(aMsg);
 	}
@@ -92,7 +97,7 @@ public class Client {
                 Client.server_name = args[0];
                 String url = "rmi://" + Client.server_name + "/login";
                 Login log = (Login) Naming.lookup(url);
-                Client client = new Client(log, System.out);
+                Client client = new Client(log);
                 EventQueue.invokeLater(new Runnable() {
                         @Override
                         public void run() {

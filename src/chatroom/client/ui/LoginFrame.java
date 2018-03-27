@@ -118,7 +118,7 @@ public class LoginFrame extends JFrame {
                                    throw new UncorrectNicknameException();
                                 
 				String chat = "";
-				if (tabPane.areFocusTraversalKeysSet(0)) {
+				if (tabPane.getSelectedIndex()==0) {
 					chat = chatroomsList.getSelectedValue();
 				} else {
 					chat = chatroomTextField.getText();
