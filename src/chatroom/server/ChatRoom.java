@@ -19,7 +19,7 @@ public class ChatRoom {
 	private int max_connection = 10;
 
 	/**
-	 * Hashmap contenant pour chaque session les pseudos associés
+	 * Hashmap contenant pour chaque session les pseudos associes
 	 */
 	private Map<String, Session> clients;
 

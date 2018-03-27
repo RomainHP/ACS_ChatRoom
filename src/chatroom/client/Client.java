@@ -34,12 +34,12 @@ public class Client {
 		this.listener = new ListenerImpl(out);
 	}
 
-	public void listen() {
-		Thread t = new Thread() {
+	public void listen(String name) {
+		/*Thread t = new Thread() {
 			public void run() {
 				System.out.println("Enregistrement de l'objet.");
 				try {
-					Naming.rebind(name_rebind, (Remote) Client.this.listener);
+					Naming.rebind(name, (Remote) Client.this.listener);
 				} catch (RemoteException | MalformedURLException e) {
 					e.printStackTrace();
 					return;
@@ -47,7 +47,13 @@ public class Client {
 				System.out.println("listener operationnel.");
 			}
 		};
-		t.start();
+		t.start();*/
+                System.out.println("Enregistrement de l'objet.");
+                try {
+                        Naming.rebind(name, (Remote) Client.this.listener);
+                } catch (RemoteException | MalformedURLException e) {
+                        e.printStackTrace();
+                }
 	}
 
 	public void connect(String pseudo, String chat) throws RemoteException, MaxConnectionException,
@@ -58,6 +64,7 @@ public class Client {
 	public void connect(String pseudo, String chat, String password) throws RemoteException, MaxConnectionException,
 			WrongPasswordException, NicknameNotAvailableException, MalformedURLException, NotBoundException {
 		String name = Client.name_rebind + chat + "_" + pseudo;
+                this.listen(name);
 		String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat, password);
 		this.session = (Session) Naming.lookup(url);
 	}
@@ -71,6 +78,10 @@ public class Client {
 		if (this.session != null)
 			this.session.sendMessage(aMsg);
 	}
+        
+        public Session getSession(){
+            return this.session;
+        }
         
         public static void main(String[] args) {
             try {

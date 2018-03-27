@@ -113,6 +113,9 @@ public class LoginFrame extends JFrame {
 				String password = passwordTextField.getText();
 				try {
 					client.connect(pseudo, chat, password);
+                                        ChatFrame chatframe = new ChatFrame(chat,client.getSession());
+                                        LoginFrame.this.setVisible(false);
+                                        chatframe.setVisible(true);
 				} catch (RemoteException | MalformedURLException | MaxConnectionException | WrongPasswordException
 						| NicknameNotAvailableException | NotBoundException e) {
 					ExceptionPopup.showError(e);

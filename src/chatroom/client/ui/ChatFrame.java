@@ -54,7 +54,7 @@ public class ChatFrame extends JFrame {
 		JLabel lblUsers = new JLabel("Users :");
 		verticalBox.add(lblUsers);
 
-		JList<String> usersList = new JList<>((String[]) session.getAllUsers().toArray());
+		JList<String> usersList = new JList<>(session.getAllUsers());
 
 		JScrollPane scrollPane = new JScrollPane(usersList);
 		verticalBox.add(scrollPane);

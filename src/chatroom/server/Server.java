@@ -1,4 +1,4 @@
-package chatroom.server;
+ package chatroom.server;
 
 import java.rmi.Naming;
 import java.rmi.Remote;
