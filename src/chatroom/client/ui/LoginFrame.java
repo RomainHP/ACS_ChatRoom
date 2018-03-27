@@ -105,7 +105,7 @@ public class LoginFrame extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				String pseudo = pseudoTextField.getText();
 				String chat = "";
-				if (tabPane.areFocusTraversalKeysSet(0)) {
+				if (tabPane.getSelectedIndex()==0) {
 					chat = chatroomsList.getSelectedValue();
 				} else {
 					chat = chatroomTextField.getText();
@@ -114,6 +114,7 @@ public class LoginFrame extends JFrame {
 				try {
 					client.connect(pseudo, chat, password);
                                         ChatFrame chatframe = new ChatFrame(chat,client.getSession());
+                                        client.setOutput(chatframe.getOuput());
                                         LoginFrame.this.setVisible(false);
                                         chatframe.setVisible(true);
 				} catch (RemoteException | MalformedURLException | MaxConnectionException | WrongPasswordException

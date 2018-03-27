@@ -32,7 +32,7 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
 			throws RemoteException, MaxConnectionException, WrongPasswordException, NicknameNotAvailableException,
 			MalformedURLException, NotBoundException {
 		if (!this.chatrooms.containsKey(aChatroom))
-			this.chatrooms.put(aChatroom, new ChatRoom());
+                    this.chatrooms.put(aChatroom, new ChatRoom());
 		ChatRoom chat = this.chatrooms.get(aChatroom);
 		return chat.connect(aListener, aNickname);
 	}
@@ -42,7 +42,8 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
 			throws RemoteException, MaxConnectionException, WrongPasswordException, NicknameNotAvailableException,
 			MalformedURLException, NotBoundException {
 		if (!this.chatrooms.containsKey(aChatroom))
-			this.chatrooms.put(aChatroom, new ChatRoom());
+                    this.chatrooms.put(aChatroom, new ChatRoom());
+                System.out.println(aChatroom);
 		ChatRoom chat = this.chatrooms.get(aChatroom);
 		return chat.connect(aListener, aNickname, aPassword);
 	}

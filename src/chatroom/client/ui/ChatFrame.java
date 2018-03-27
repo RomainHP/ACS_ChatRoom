@@ -6,6 +6,11 @@ import java.rmi.RemoteException;
 import javax.swing.*;
 
 import chatroom.server.Session;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ChatFrame extends JFrame {
 
@@ -24,6 +29,8 @@ public class ChatFrame extends JFrame {
 	JList<JLabel> users;
 
 	JButton validate;
+        
+        JTextPane chatTextPane;
 
 	public ChatFrame(String title, Session session) throws RemoteException {
 		super("Chatroom : " + title);
@@ -34,7 +41,7 @@ public class ChatFrame extends JFrame {
 		lblChatroom.setHorizontalAlignment(SwingConstants.CENTER);
 		this.getContentPane().add(lblChatroom, BorderLayout.NORTH);
 
-		JTextPane chatTextPane = new JTextPane();
+		chatTextPane = new JTextPane();
 		chatTextPane.setEditable(false);
 		this.getContentPane().add(chatTextPane, BorderLayout.CENTER);
 
@@ -58,6 +65,22 @@ public class ChatFrame extends JFrame {
 
 		JScrollPane scrollPane = new JScrollPane(usersList);
 		verticalBox.add(scrollPane);
+                
+                btnSend.addActionListener(new ActionListener(){
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            session.sendMessage(msgTextField.getText());
+                        } catch (Exception ex) {
+                            ExceptionPopup.showError(ex);
+                        }
+                    }
+                });
 	}
+        
+        public OutputStream getOutput(){
+            //return this.chatTextPane.get
+            return null;
+        }
 
 }

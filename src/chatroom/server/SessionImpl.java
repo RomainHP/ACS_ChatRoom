@@ -10,6 +10,8 @@ import java.util.List;
 
 import chatroom.client.Client;
 import chatroom.client.Listener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SessionImpl extends UnicastRemoteObject implements Session {
 
@@ -33,8 +35,8 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
 		this.chatroom.disconnect(this.nickname);
 	}
 
-	public void sendMessage(String aMsg) throws RemoteException {
-		this.chatroom.sendMessage(aMsg, this.nickname);
+	public void sendMessage(String aMsg) throws RemoteException, IOException {
+            this.chatroom.sendMessage(aMsg, this.nickname);
 	}
 
 	public void receiveMessage(String aMsg) throws IOException, RemoteException {

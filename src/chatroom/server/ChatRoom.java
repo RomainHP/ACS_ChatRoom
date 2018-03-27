@@ -13,6 +13,7 @@ import java.util.Map;
 import chatroom.exception.MaxConnectionException;
 import chatroom.exception.NicknameNotAvailableException;
 import chatroom.exception.WrongPasswordException;
+import java.io.IOException;
 
 public class ChatRoom {
 
@@ -36,11 +37,12 @@ public class ChatRoom {
 		this.clients.remove(aNickname);
 	}
 
-	public void sendMessage(String aMsg, String aNickname) throws RemoteException {
+	public void sendMessage(String aMsg, String aNickname) throws RemoteException, IOException {
 		// Broadcast to all clients
 		Iterator<Session> it = clients.values().iterator();
+                System.out.println("ChatRoom sendMessage : " + this.clients.size());
 		while (it.hasNext()) {
-			it.next().sendMessage(aNickname + " : " + aMsg);
+			it.next().receiveMessage(aNickname + " : " + aMsg);
 		}
 	}
 
