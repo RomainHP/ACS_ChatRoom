@@ -6,12 +6,8 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
-
-import chatroom.client.Client;
 import chatroom.client.Listener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import chatroom.client.Message;
 
 public class SessionImpl extends UnicastRemoteObject implements Session {
 
@@ -31,18 +27,22 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
 		this.nickname = aNickname;
 	}
 
+        @Override
 	public void disconnect() throws RemoteException {
 		this.chatroom.disconnect(this.nickname);
 	}
 
-	public void sendMessage(String aMsg) throws RemoteException, IOException {
-            this.chatroom.sendMessage(aMsg, this.nickname);
+        @Override
+	public void sendMessage(Message aMsg) throws RemoteException, IOException {
+            this.chatroom.sendMessage(aMsg);
 	}
 
-	public void receiveMessage(String aMsg) throws IOException, RemoteException {
+        @Override
+	public void receiveMessage(Message aMsg) throws IOException, RemoteException {
 		this.listener.receiveMessage(aMsg);
 	}
 
+        @Override
 	public String[] getAllUsers() throws RemoteException {
 		String[] res = new String[this.chatroom.getAllUsers().size()];
                 for (int i=0; i<this.chatroom.getAllUsers().size(); i++){

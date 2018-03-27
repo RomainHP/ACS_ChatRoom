@@ -1,5 +1,7 @@
 package chatroom.client.ui;
 
+import chatroom.client.Client;
+import chatroom.client.JTextAreaOutputStream;
 import java.awt.BorderLayout;
 import java.rmi.RemoteException;
 
@@ -8,79 +10,104 @@ import javax.swing.*;
 import chatroom.server.Session;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ChatFrame extends JFrame {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -301099811934446277L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -301099811934446277L;
 
-	JTextArea textToSend;
+    JTextArea textToSend;
 
-	JTextArea textReceived;
+    JTextArea textReceived;
 
-	/**
-	 * list of users
-	 */
-	JList<JLabel> users;
+    /**
+     * list of users
+     */
+    JList<JLabel> users;
 
-	JButton validate;
-        
-        JTextPane chatTextPane;
+    JButton validate;
 
-	public ChatFrame(String title, Session session) throws RemoteException {
-		super("Chatroom : " + title);
-		this.setBounds(100, 100, 450, 300);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    JTextArea chatTextArea;
 
-		JLabel lblChatroom = new JLabel("ChatRoom");
-		lblChatroom.setHorizontalAlignment(SwingConstants.CENTER);
-		this.getContentPane().add(lblChatroom, BorderLayout.NORTH);
+    public ChatFrame(String title, Client client) throws RemoteException {
+        super("Chatroom : " + title);
+        this.setBounds(100, 100, 450, 300);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		chatTextPane = new JTextPane();
-		chatTextPane.setEditable(false);
-		this.getContentPane().add(chatTextPane, BorderLayout.CENTER);
+        JLabel lblChatroom = new JLabel("ChatRoom");
+        lblChatroom.setHorizontalAlignment(SwingConstants.CENTER);
+        this.getContentPane().add(lblChatroom, BorderLayout.NORTH);
 
-		Box horizontalBox = Box.createHorizontalBox();
-		this.getContentPane().add(horizontalBox, BorderLayout.SOUTH);
+        chatTextArea = new JTextArea();
+        chatTextArea.setEditable(false);
+        this.getContentPane().add(chatTextArea, BorderLayout.CENTER);
 
-		JTextField msgTextField = new JTextField();
-		horizontalBox.add(msgTextField);
-		msgTextField.setColumns(10);
+        Box horizontalBox = Box.createHorizontalBox();
+        this.getContentPane().add(horizontalBox, BorderLayout.SOUTH);
 
-		JButton btnSend = new JButton("Send");
-		horizontalBox.add(btnSend);
+        JTextField msgTextField = new JTextField();
+        horizontalBox.add(msgTextField);
+        msgTextField.setColumns(10);
 
-		Box verticalBox = Box.createVerticalBox();
-		this.getContentPane().add(verticalBox, BorderLayout.EAST);
+        JButton btnSend = new JButton("Send");
+        horizontalBox.add(btnSend);
 
-		JLabel lblUsers = new JLabel("Users :");
-		verticalBox.add(lblUsers);
+        Box verticalBox = Box.createVerticalBox();
+        this.getContentPane().add(verticalBox, BorderLayout.EAST);
 
-		JList<String> usersList = new JList<>(session.getAllUsers());
+        JLabel lblUsers = new JLabel("Users :");
+        verticalBox.add(lblUsers);
 
-		JScrollPane scrollPane = new JScrollPane(usersList);
-		verticalBox.add(scrollPane);
-                
-                btnSend.addActionListener(new ActionListener(){
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            session.sendMessage(msgTextField.getText());
-                        } catch (Exception ex) {
-                            ExceptionPopup.showError(ex);
-                        }
+        JList<String> usersList = new JList<>(client.getSession().getAllUsers());
+
+        JScrollPane scrollPane = new JScrollPane(usersList);
+        verticalBox.add(scrollPane);
+
+        msgTextField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    try {
+                        client.sendMessage(msgTextField.getText());
+                        msgTextField.setText("");
+                    } catch (Exception ex) {
+                        ExceptionPopup.showError(ex);
                     }
-                });
-	}
-        
-        public OutputStream getOutput(){
-            //return this.chatTextPane.get
-            return null;
-        }
+                }
+            }
 
+            @Override
+            public void keyTyped(KeyEvent e) {}
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+
+        });
+
+        btnSend.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    client.sendMessage(msgTextField.getText());
+                    msgTextField.setText("");
+                } catch (Exception ex) {
+                    ExceptionPopup.showError(ex);
+                }
+            }
+        });
+    }
+
+    public OutputStream getOutput() {
+        PrintStream printStream = new PrintStream(new JTextAreaOutputStream(chatTextArea));
+        return printStream;
+    }
 }

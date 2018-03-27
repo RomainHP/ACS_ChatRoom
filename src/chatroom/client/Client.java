@@ -25,6 +25,8 @@ public class Client {
 	private Listener listener;
 
 	private Login login;
+        
+        private String nickname;
 
 	public static String server_name;
 
@@ -34,6 +36,14 @@ public class Client {
 		this.login = log;
 		this.listener = new ListenerImpl(System.out);
 	}
+        
+        public void setNickname(String nick){
+            this.nickname = nick;
+        }
+        
+        public String getNickname(){
+            return this.nickname;
+        }
         
         public void setOutput(OutputStream out) throws RemoteException{
             this.listener.setOutput(out);
@@ -80,8 +90,10 @@ public class Client {
 	}
 
 	public void sendMessage(String aMsg) throws RemoteException, IOException {
-		if (this.session != null)
-			this.session.sendMessage(aMsg);
+            if (this.session != null){
+                Message msg = new Message(aMsg, this.nickname);
+                this.session.sendMessage(msg);
+            }
 	}
         
         public Session getSession(){

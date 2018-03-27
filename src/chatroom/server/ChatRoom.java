@@ -1,5 +1,6 @@
 package chatroom.server;
 
+import chatroom.client.Message;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -17,68 +18,68 @@ import java.io.IOException;
 
 public class ChatRoom {
 
-	private int max_connection = 10;
+    private int max_connection = 10;
 
-	/**
-	 * Hashmap contenant pour chaque session les pseudos associes
-	 */
-	private Map<String, Session> clients;
+    /**
+     * Hashmap contenant pour chaque session les pseudos associes
+     */
+    private Map<String, Session> clients;
 
-	public ChatRoom() {
-		this.clients = new HashMap<>();
-	}
+    public ChatRoom() {
+        this.clients = new HashMap<>();
+    }
 
-	public ChatRoom(int aMax_connection) {
-		this();
-		this.max_connection = aMax_connection;
-	}
+    public ChatRoom(int aMax_connection) {
+        this();
+        this.max_connection = aMax_connection;
+    }
 
-	public void disconnect(String aNickname) {
-		this.clients.remove(aNickname);
-	}
+    public void disconnect(String aNickname) {
+        this.clients.remove(aNickname);
+    }
 
-	public void sendMessage(String aMsg, String aNickname) throws RemoteException, IOException {
-		// Broadcast to all clients
-		Iterator<Session> it = clients.values().iterator();
-                System.out.println("ChatRoom sendMessage : " + this.clients.size());
-		while (it.hasNext()) {
-			it.next().receiveMessage(aNickname + " : " + aMsg);
-		}
-	}
+    public void sendMessage(Message aMsg) throws RemoteException, IOException {
+        // Broadcast to all clients
+        Iterator<Session> it = clients.values().iterator();
+        while (it.hasNext()) {
+            it.next().receiveMessage(aMsg);
+        }
+    }
 
-	synchronized public String connect(String aListener, String aNickname)
-			throws MaxConnectionException, WrongPasswordException, NicknameNotAvailableException, RemoteException,
-			MalformedURLException, NotBoundException {
-		if (clients.size() >= max_connection)
-			throw new MaxConnectionException();
-		if (this.verifyNickname(aNickname)) {
-			Session session = new SessionImpl(this, aListener, aNickname);
-			// rebind client session
-			String name = "client_" + aNickname;
-			Naming.rebind(name, session);
-			this.clients.put(aNickname, session);
-			return name;
-		} else {
-			throw new NicknameNotAvailableException();
-		}
-	}
+    synchronized public String connect(String aListener, String aNickname)
+            throws MaxConnectionException, WrongPasswordException, NicknameNotAvailableException, RemoteException,
+            MalformedURLException, NotBoundException {
+        if (clients.size() >= max_connection) {
+            throw new MaxConnectionException();
+        }
+        if (this.verifyNickname(aNickname)) {
+            Session session = new SessionImpl(this, aListener, aNickname);
+            // rebind client session
+            String name = "client_" + aNickname;
+            Naming.rebind(name, session);
+            this.clients.put(aNickname, session);
+            return name;
+        } else {
+            throw new NicknameNotAvailableException();
+        }
+    }
 
-	synchronized public String connect(String aListener, String aNickname, String aPassword)
-			throws MaxConnectionException, WrongPasswordException, NicknameNotAvailableException, RemoteException,
-			MalformedURLException, NotBoundException {
-		return this.connect(aListener, aNickname);
-	}
+    synchronized public String connect(String aListener, String aNickname, String aPassword)
+            throws MaxConnectionException, WrongPasswordException, NicknameNotAvailableException, RemoteException,
+            MalformedURLException, NotBoundException {
+        return this.connect(aListener, aNickname);
+    }
 
-	public boolean verifyNickname(String aNickname) {
-		return !clients.containsKey(aNickname);
-	}
+    public boolean verifyNickname(String aNickname) {
+        return !clients.containsKey(aNickname);
+    }
 
-	public List<String> getAllUsers() {
-		List<String> res = new ArrayList<>();
-		Iterator<String> it = this.clients.keySet().iterator();
-		while (it.hasNext()) {
-			res.add(it.next());
-		}
-		return res;
-	}
+    public List<String> getAllUsers() {
+        List<String> res = new ArrayList<>();
+        Iterator<String> it = this.clients.keySet().iterator();
+        while (it.hasNext()) {
+            res.add(it.next());
+        }
+        return res;
+    }
 }

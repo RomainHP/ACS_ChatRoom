@@ -9,5 +9,5 @@ public interface Listener extends Remote {
         
         abstract void setOutput(OutputStream out) throws RemoteException;
 
-	abstract void receiveMessage(String aMsg) throws RemoteException, IOException;
+	abstract void receiveMessage(Message aMsg) throws RemoteException, IOException;
 }

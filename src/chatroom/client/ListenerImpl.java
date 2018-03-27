@@ -18,12 +18,14 @@ public class ListenerImpl extends UnicastRemoteObject implements Listener {
 		this.out = out;
 	}
         
+        @Override
         public void setOutput(OutputStream out) throws RemoteException{
             this.out = out;
         }
 
-	public void receiveMessage(String aMsg) throws RemoteException, IOException {
+        @Override
+	public void receiveMessage(Message aMsg) throws RemoteException, IOException {
 		// display on client interface
-		out.write(aMsg.getBytes());
+		out.write(aMsg.getMessage());
 	}
 }

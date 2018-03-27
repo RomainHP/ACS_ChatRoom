@@ -20,12 +20,12 @@ import java.util.regex.Pattern;
 
 public class LoginFrame extends JFrame {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -301099811934446277L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -301099811934446277L;
 
-	/*
+    /*
 	 * JTextArea nickname;
 	 * 
 	 * JTextArea chatroom;
@@ -48,108 +48,104 @@ public class LoginFrame extends JFrame {
 	 * BorderLayout.SOUTH);
 	 * 
 	 * this.setPreferredSize(new Dimension(400,300)); this.pack(); }
-	 */
+     */
+    public LoginFrame(String[] chats, Client client) {
+        super("Login");
+        this.setBounds(100, 100, 444, 300);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-	public LoginFrame(String[] chats, Client client) {
-		super("Login");
-		this.setBounds(100, 100, 444, 300);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Box verticalBox = Box.createVerticalBox();
+        this.getContentPane().add(verticalBox, BorderLayout.WEST);
 
-		Box verticalBox = Box.createVerticalBox();
-		this.getContentPane().add(verticalBox, BorderLayout.WEST);
+        JLabel lblPseudo = new JLabel("Nickname :");
+        verticalBox.add(lblPseudo);
 
-		JLabel lblPseudo = new JLabel("Nickname :");
-		verticalBox.add(lblPseudo);
+        JTextField pseudoTextField = new JTextField();
+        verticalBox.add(pseudoTextField);
+        pseudoTextField.setColumns(10);
 
-		JTextField pseudoTextField = new JTextField();
-		verticalBox.add(pseudoTextField);
-		pseudoTextField.setColumns(10);
+        JLabel lblLogin = new JLabel("Login");
+        lblLogin.setHorizontalAlignment(SwingConstants.CENTER);
+        this.getContentPane().add(lblLogin, BorderLayout.NORTH);
 
-		JLabel lblLogin = new JLabel("Login");
-		lblLogin.setHorizontalAlignment(SwingConstants.CENTER);
-		this.getContentPane().add(lblLogin, BorderLayout.NORTH);
+        JButton btnConfirm = new JButton("Confirm");
+        this.getContentPane().add(btnConfirm, BorderLayout.SOUTH);
 
-		JButton btnConfirm = new JButton("Confirm");
-		this.getContentPane().add(btnConfirm, BorderLayout.SOUTH);
+        JTabbedPane tabPane = new JTabbedPane(JTabbedPane.TOP);
+        this.getContentPane().add(tabPane, BorderLayout.CENTER);
 
-		JTabbedPane tabPane = new JTabbedPane(JTabbedPane.TOP);
-		this.getContentPane().add(tabPane, BorderLayout.CENTER);
+        Box chatroomScrollPane = Box.createVerticalBox();
+        tabPane.addTab("Join", null, chatroomScrollPane, null);
 
-		Box chatroomScrollPane = Box.createVerticalBox();
-		tabPane.addTab("Join", null, chatroomScrollPane, null);
+        JLabel lblChatroom = new JLabel("ChatRoom :");
+        chatroomScrollPane.add(lblChatroom);
 
-		JLabel lblChatroom = new JLabel("ChatRoom :");
-		chatroomScrollPane.add(lblChatroom);
+        JList<String> chatroomsList = new JList<>(chats);
 
-		JList<String> chatroomsList = new JList<>(chats);
+        JScrollPane scrollPane = new JScrollPane(chatroomsList);
+        chatroomScrollPane.add(scrollPane);
 
-		JScrollPane scrollPane = new JScrollPane(chatroomsList);
-		chatroomScrollPane.add(scrollPane);
+        Box verticalBox_2 = Box.createVerticalBox();
+        tabPane.addTab("Create", null, verticalBox_2, null);
 
-		Box verticalBox_2 = Box.createVerticalBox();
-		tabPane.addTab("Create", null, verticalBox_2, null);
+        JLabel chatroomLabel = new JLabel("ChatRoom :");
+        verticalBox_2.add(chatroomLabel);
 
-		JLabel chatroomLabel = new JLabel("ChatRoom :");
-		verticalBox_2.add(chatroomLabel);
+        JTextField chatroomTextField = new JTextField();
+        verticalBox_2.add(chatroomTextField);
+        chatroomTextField.setColumns(10);
 
-		JTextField chatroomTextField = new JTextField();
-		verticalBox_2.add(chatroomTextField);
-		chatroomTextField.setColumns(10);
+        JLabel lblPassword = new JLabel("Password :");
+        verticalBox_2.add(lblPassword);
 
-		JLabel lblPassword = new JLabel("Password :");
-		verticalBox_2.add(lblPassword);
+        JTextField passwordTextField = new JTextField();
+        passwordTextField.setColumns(10);
+        verticalBox_2.add(passwordTextField);
 
-		JTextField passwordTextField = new JTextField();
-		passwordTextField.setColumns(10);
-		verticalBox_2.add(passwordTextField);
+        // launch the chat
+        btnConfirm.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                try {
+                    String pseudo = pseudoTextField.getText();
 
-		// launch the chat
-		btnConfirm.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-                            try {	
-                                String pseudo = pseudoTextField.getText();
-                                
-                                Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
-                                Matcher m = p.matcher(pseudo);
-                                boolean b = m.find();
+                    Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+                    Matcher m = p.matcher(pseudo);
+                    boolean b = m.find();
 
-                                if (b)
-                                   throw new UncorrectNicknameException();
-                                
-				String chat = "";
-				if (tabPane.getSelectedIndex()==0) {
-					chat = chatroomsList.getSelectedValue();
-				} else {
-					chat = chatroomTextField.getText();
-				}
-                                
-				String password = passwordTextField.getText();
-                                
-                                if(!password.isEmpty()){
-                                    m = p.matcher(password);
-                                    b = m.find();
+                    if (b) {
+                        throw new UncorrectNicknameException();
+                    }
+                    String chat = "";
+                    if (tabPane.getSelectedIndex() == 0) {
+                        chat = chatroomsList.getSelectedValue();
+                    } else {
+                        chat = chatroomTextField.getText();
+                    }
+                    String password = passwordTextField.getText();
 
-                                    if(b)
-                                        throw new NotAllowedPasswordException();
-                                }
+                    if (!password.isEmpty()) {
+                        m = p.matcher(password);
+                        b = m.find();
 
-                                if(!password.isEmpty())
-                                    client.connect(pseudo, chat, password);
-                                else
-                                    client.connect(pseudo, chat);
-                                
-                                
-                                
-                                ChatFrame chatframe = new ChatFrame(chat,client.getSession());
-                                LoginFrame.this.setVisible(false);
-                                chatframe.setVisible(true);
-				
-                            } catch (RemoteException | MalformedURLException | MaxConnectionException | WrongPasswordException
-						| NicknameNotAvailableException | NotBoundException | NotAllowedPasswordException | UncorrectNicknameException e) {
-					ExceptionPopup.showError(e);
-				}
-			}
-		});
-	}
+                        if (b) {
+                            throw new NotAllowedPasswordException();
+                        }
+                    }
+                    if (!password.isEmpty()) {
+                        client.connect(pseudo, chat, password);
+                    } else {
+                        client.connect(pseudo, chat);
+                    }
+                    ChatFrame chatframe = new ChatFrame(chat, client);
+                    client.setOutput(chatframe.getOutput());
+                    client.setNickname(pseudo);
+                    LoginFrame.this.setVisible(false);
+                    chatframe.setVisible(true);
+                } catch (RemoteException | MalformedURLException | MaxConnectionException | WrongPasswordException | NicknameNotAvailableException | NotBoundException | NotAllowedPasswordException | UncorrectNicknameException e) {
+                    ExceptionPopup.showError(e);
+                }
+            }
+        });
+    }
 }
