@@ -12,7 +12,11 @@ import javax.swing.*;
 import chatroom.client.Client;
 import chatroom.exception.MaxConnectionException;
 import chatroom.exception.NicknameNotAvailableException;
+import chatroom.exception.NotAllowedPasswordException;
+import chatroom.exception.UncorrectNicknameException;
 import chatroom.exception.WrongPasswordException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LoginFrame extends JFrame {
 
@@ -103,21 +107,46 @@ public class LoginFrame extends JFrame {
 		btnConfirm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				String pseudo = pseudoTextField.getText();
+                            try {	
+                                String pseudo = pseudoTextField.getText();
+                                
+                                Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+                                Matcher m = p.matcher(pseudo);
+                                boolean b = m.find();
+
+                                if (b)
+                                   throw new UncorrectNicknameException();
+                                
 				String chat = "";
 				if (tabPane.areFocusTraversalKeysSet(0)) {
 					chat = chatroomsList.getSelectedValue();
 				} else {
 					chat = chatroomTextField.getText();
 				}
+                                
 				String password = passwordTextField.getText();
-				try {
-					client.connect(pseudo, chat, password);
-                                        ChatFrame chatframe = new ChatFrame(chat,client.getSession());
-                                        LoginFrame.this.setVisible(false);
-                                        chatframe.setVisible(true);
-				} catch (RemoteException | MalformedURLException | MaxConnectionException | WrongPasswordException
-						| NicknameNotAvailableException | NotBoundException e) {
+                                
+                                if(!password.isEmpty()){
+                                    m = p.matcher(password);
+                                    b = m.find();
+
+                                    if(b)
+                                        throw new NotAllowedPasswordException();
+                                }
+
+                                if(!password.isEmpty())
+                                    client.connect(pseudo, chat, password);
+                                else
+                                    client.connect(pseudo, chat);
+                                
+                                
+                                
+                                ChatFrame chatframe = new ChatFrame(chat,client.getSession());
+                                LoginFrame.this.setVisible(false);
+                                chatframe.setVisible(true);
+				
+                            } catch (RemoteException | MalformedURLException | MaxConnectionException | WrongPasswordException
+						| NicknameNotAvailableException | NotBoundException | NotAllowedPasswordException | UncorrectNicknameException e) {
 					ExceptionPopup.showError(e);
 				}
 			}
