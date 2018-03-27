@@ -1,5 +1,7 @@
 package chatroom.client;
 
+import chatroom.client.ui.ExceptionPopup;
+import chatroom.client.ui.LoginFrame;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -9,9 +11,11 @@ import java.rmi.RemoteException;
 
 import chatroom.exception.MaxConnectionException;
 import chatroom.exception.NicknameNotAvailableException;
+import chatroom.exception.NotEnoughArgumentsException;
 import chatroom.exception.WrongPasswordException;
 import chatroom.server.Login;
 import chatroom.server.Session;
+import java.awt.EventQueue;
 
 public class Client {
 
@@ -66,5 +70,31 @@ public class Client {
 	public void sendMessage(String aMsg) throws RemoteException {
 		if (this.session != null)
 			this.session.sendMessage(aMsg);
+	}
+        
+        public static void main(String[] args) {
+            try {
+                if (args.length <= 0) {
+                    throw new NotEnoughArgumentsException();
+                }
+                // Login
+                Client.server_name = args[0];
+                String url = "rmi://" + Client.server_name + "/login";
+                Login log = (Login) Naming.lookup(url);
+                Client client = new Client(log, System.out);
+                EventQueue.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                                try {
+                                        LoginFrame logframe = new LoginFrame(log.getAllChatRoom(), client);
+                                        logframe.setVisible(true);
+                                } catch (Exception e) {
+                                        ExceptionPopup.showError(e);
+                                }
+                        }
+                });
+            } catch (Exception e) {
+                    ExceptionPopup.showError(e);
+            }
 	}
 }

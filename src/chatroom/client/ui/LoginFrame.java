@@ -1,11 +1,9 @@
 package chatroom.client.ui;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
@@ -15,7 +13,6 @@ import chatroom.client.Client;
 import chatroom.exception.MaxConnectionException;
 import chatroom.exception.NicknameNotAvailableException;
 import chatroom.exception.WrongPasswordException;
-import chatroom.server.Login;
 
 public class LoginFrame extends JFrame {
 
@@ -123,31 +120,4 @@ public class LoginFrame extends JFrame {
 			}
 		});
 	}
-
-	public static void main(String[] args) {
-		if (args.length <= 0) {
-			System.err.println("Il manque l'argument du hostname du server");
-			return;
-		}
-		try {
-			// Login
-			Client.server_name = args[0];
-			String url = "rmi://" + Client.server_name + "/login";
-			Login log = (Login) Naming.lookup(url);
-			Client client = new Client(log, System.out);
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					try {
-						LoginFrame logframe = new LoginFrame(log.getAllChatRoom(), client);
-						logframe.setVisible(true);
-					} catch (Exception e) {
-						ExceptionPopup.showError(e);
-					}
-				}
-			});
-		} catch (Exception e) {
-			ExceptionPopup.showError(e);
-		}
-	}
-
 }
