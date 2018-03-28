@@ -7,15 +7,12 @@ import java.rmi.RemoteException;
 
 import javax.swing.*;
 
-import chatroom.server.Session;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ChatFrame extends JFrame {
 
@@ -23,17 +20,6 @@ public class ChatFrame extends JFrame {
      *
      */
     private static final long serialVersionUID = -301099811934446277L;
-
-    JTextArea textToSend;
-
-    JTextArea textReceived;
-
-    /**
-     * list of users
-     */
-    JList<JLabel> users;
-
-    JButton validate;
 
     JTextArea chatTextArea;
 
@@ -70,7 +56,7 @@ public class ChatFrame extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(usersList);
         verticalBox.add(scrollPane);
-
+        //send a message with enter
         msgTextField.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -92,13 +78,13 @@ public class ChatFrame extends JFrame {
             }
 
         });
-
+        //send a message with the button
         btnSend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     client.sendMessage(msgTextField.getText());
-                    msgTextField.setText("");
+                    msgTextField.setText(""); //clean the text field
                 } catch (Exception ex) {
                     ExceptionPopup.showError(ex);
                 }
