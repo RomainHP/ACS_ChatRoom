@@ -8,6 +8,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,27 +69,31 @@ public class Client {
 		System.out.println("Enregistrement de l'objet.");
 		try {
 			Naming.rebind(name, (Remote) Client.this.listener);
+			System.out.println("listener operationnel.");
 		} catch (RemoteException | MalformedURLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void connect(String pseudo, String chat) throws RemoteException, MaxConnectionException,
-	WrongPasswordException, NicknameNotAvailableException, MalformedURLException, NotBoundException {
+	public void connect(String pseudo, String chat) throws MaxConnectionException,
+	WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
 		this.connect(pseudo, chat, "");
 	}
 
-	public void connect(String pseudo, String chat, String password) throws RemoteException, MaxConnectionException,
-	WrongPasswordException, NicknameNotAvailableException, MalformedURLException, NotBoundException {
+	public void connect(String pseudo, String chat, String password) throws MaxConnectionException,
+	WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
 		String name = Client.name_rebind + chat + "_" + pseudo;
 		this.listen(name);
 		String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat, password);
 		this.session = (Session) Naming.lookup(url);
 	}
 
-	public void disconnect() throws RemoteException {
-		if (this.session != null)
+	public void disconnect() throws IOException {
+		if (this.session != null) {
 			this.session.disconnect();
+			//unexport the listener of the client
+			UnicastRemoteObject.unexportObject(this.listener, true);
+		}
 	}
 
 	public void sendMessage(String aMsg) throws RemoteException, IOException {
@@ -110,7 +115,7 @@ public class Client {
 	public static boolean verifyName(String name) {
 		Pattern p = Pattern.compile("[^a-zA-Z0-9]", Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(name);
-        return m.find();
+        return !m.find();
 	}
 
 	public static void main(String[] args) {
@@ -127,7 +132,7 @@ public class Client {
 				@Override
 				public void run() {
 					try {
-						LoginFrame logframe = new LoginFrame(log.getAllChatRoom(), client);
+						LoginFrame logframe = new LoginFrame(log, client);
 						logframe.setVisible(true);
 					} catch (Exception e) {
 						ExceptionPopup.showError(e);

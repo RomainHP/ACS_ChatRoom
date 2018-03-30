@@ -3,7 +3,9 @@ package chatroom.client.ui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.MalformedURLException;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
@@ -14,6 +16,7 @@ import chatroom.exception.MaxConnectionException;
 import chatroom.exception.NicknameNotAvailableException;
 import chatroom.exception.UncorrectNameException;
 import chatroom.exception.WrongPasswordException;
+import chatroom.server.Login;
 
 public class LoginFrame extends JFrame {
 
@@ -22,7 +25,9 @@ public class LoginFrame extends JFrame {
 	 */
 	private static final long serialVersionUID = -301099811934446277L;
 	
-	public LoginFrame(String[] chats, Client client) {
+	private JList<String> chatroomsList;
+
+	public LoginFrame(Login log, Client client) throws RemoteException {
 		super("Login");
 		this.setBounds(100, 100, 444, 300);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -50,13 +55,16 @@ public class LoginFrame extends JFrame {
 		Box chatroomScrollPane = Box.createVerticalBox();
 		tabPane.addTab("Join", null, chatroomScrollPane, null);
 
-		JLabel lblChatroom = new JLabel("ChatRoom :");
+		JLabel lblChatroom = new JLabel("Select a ChatRoom :");
 		chatroomScrollPane.add(lblChatroom);
 
-		JList<String> chatroomsList = new JList<>(chats);
+		this.chatroomsList = new JList<>(log.getAllChatRoom());
 
 		JScrollPane scrollPane = new JScrollPane(chatroomsList);
 		chatroomScrollPane.add(scrollPane);
+		
+		JButton actualizeButton = new JButton("Actualize");
+		scrollPane.setColumnHeaderView(actualizeButton);
 
 		Box verticalBox_2 = Box.createVerticalBox();
 		tabPane.addTab("Create", null, verticalBox_2, null);
@@ -71,12 +79,24 @@ public class LoginFrame extends JFrame {
 		JLabel lblPassword = new JLabel("Password :");
 		verticalBox_2.add(lblPassword);
 
-		JTextField passwordTextField = new JTextField();
+		JPasswordField passwordTextField = new JPasswordField();
 		passwordTextField.setColumns(10);
 		verticalBox_2.add(passwordTextField);
 
+		// actualize the list of chatroom
+		actualizeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					LoginFrame.this.chatroomsList.setListData(log.getAllChatRoom());
+				} catch (RemoteException e) {
+					ExceptionPopup.showError(e);
+				}
+			}
+		});
+		
 		// launch the chat
 		btnConfirm.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {
@@ -86,32 +106,72 @@ public class LoginFrame extends JFrame {
 						throw new UncorrectNameException("nickname");
 					// chat
 					String chat = "";
+					// password
+					String password = "";
 					if (tabPane.getSelectedIndex() == 0) {
 						chat = chatroomsList.getSelectedValue();
+						if (log.isPrivateChatroom(chat)) password = PasswordPopup.askPassword();
 					} else {
 						chat = chatroomTextField.getText();
+						password = passwordTextField.getText();
 						if (!Client.verifyName(chat))
 							throw new UncorrectNameException("chat");
+						if (!Client.verifyName(password))
+							throw new UncorrectNameException("password");
 					}
-					// password
-					String password = passwordTextField.getText();
-					if (!Client.verifyName(password))
-						throw new UncorrectNameException("password");
-
-					if (!password.isEmpty()) {
-						client.connect(pseudo, chat, password);
-					} else {
+					// no password
+					if (password.trim().length()==0) {
 						client.connect(pseudo, chat);
+					// password
+					} else {
+						client.connect(pseudo, chat, password);
 					}
 					ChatFrame chatframe = new ChatFrame(chat, client);
 					client.setOutput(chatframe.getOutput());
 					client.setNickname(pseudo);
 					LoginFrame.this.setVisible(false);
 					chatframe.setVisible(true);
-				} catch (RemoteException | MalformedURLException | MaxConnectionException | WrongPasswordException
-						| NicknameNotAvailableException | NotBoundException | UncorrectNameException e) {
+				} catch (MaxConnectionException | WrongPasswordException
+						| NicknameNotAvailableException | NotBoundException | UncorrectNameException | IOException e) {
 					ExceptionPopup.showError(e);
 				}
+			}
+		});
+
+		//disconnect the client on close
+		this.addWindowListener(new WindowListener() {
+			@Override
+			public void windowActivated(WindowEvent e) {
+			}
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+			}
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				try {
+					client.disconnect();
+				} catch (IOException e1) {
+					ExceptionPopup.showError(e1);
+				}
+
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) {
+			}
+
+			@Override
+			public void windowOpened(WindowEvent e) {
 			}
 		});
 	}

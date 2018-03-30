@@ -6,8 +6,8 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface Listener extends Remote {
-        
-        abstract void setOutput(OutputStream out) throws RemoteException;
+
+	abstract void setOutput(OutputStream out) throws RemoteException;
 
 	abstract void receiveMessage(Message aMsg) throws RemoteException, IOException;
 }

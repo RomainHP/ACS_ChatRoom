@@ -1,6 +1,6 @@
 package chatroom.server;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -30,10 +30,10 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
 
     @Override
     public String connect(String aNickname, String aListener, String aChatroom)
-            throws RemoteException, MaxConnectionException, WrongPasswordException, NicknameNotAvailableException,
-            MalformedURLException, NotBoundException {
+            throws MaxConnectionException, WrongPasswordException, NicknameNotAvailableException,
+            NotBoundException, IOException {
         if (!this.chatrooms.containsKey(aChatroom)) {
-            this.chatrooms.put(aChatroom, new ChatRoom());
+            this.chatrooms.put(aChatroom, new ChatRoom(aChatroom, this));
         }
         ChatRoom chat = this.chatrooms.get(aChatroom);
         return chat.connect(aListener, aNickname);
@@ -41,10 +41,10 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
 
     @Override
     public String connect(String aNickname, String aListener, String aChatroom, String aPassword)
-            throws RemoteException, MaxConnectionException, WrongPasswordException, NicknameNotAvailableException,
-            MalformedURLException, NotBoundException {
+            throws MaxConnectionException, WrongPasswordException, NicknameNotAvailableException,
+            NotBoundException, IOException {
         if (!this.chatrooms.containsKey(aChatroom)) {
-            this.chatrooms.put(aChatroom, new PrivateChatRoom(aPassword));
+            this.chatrooms.put(aChatroom, new PrivateChatRoom(aChatroom, this, aPassword));
         }
         PrivateChatRoom chat = (PrivateChatRoom) this.chatrooms.get(aChatroom);
 
@@ -61,5 +61,15 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
             i++;
         }
         return res;
+    }
+    
+    @Override
+    synchronized public void removeChatroom(ChatRoom c) throws RemoteException {
+    	this.chatrooms.remove(c.getName());
+    }
+    
+    @Override
+    public boolean isPrivateChatroom(String chat) throws RemoteException {
+    	return this.chatrooms.get(chat) instanceof PrivateChatRoom;
     }
 }

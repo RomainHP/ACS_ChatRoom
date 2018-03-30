@@ -1,6 +1,7 @@
 package chatroom.client;
 
 public enum TypeMessage {
-    STRING,
+	SYSTEM,
+    MESSAGE,
     IMAGE;
 }

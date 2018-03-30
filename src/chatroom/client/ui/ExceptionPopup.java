@@ -2,12 +2,7 @@ package chatroom.client.ui;
 
 import javax.swing.JOptionPane;
 
-public class ExceptionPopup extends JOptionPane {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4956198879813629160L;
+public class ExceptionPopup {
 
 	public static void showError(Exception exceptionError) {
 		String errorMessage = "Message: " + exceptionError.getMessage();

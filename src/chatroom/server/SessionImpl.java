@@ -27,27 +27,27 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
 		this.nickname = aNickname;
 	}
 
-        @Override
-	public void disconnect() throws RemoteException {
+	@Override
+	public void disconnect() throws IOException {
 		this.chatroom.disconnect(this.nickname);
 	}
 
-        @Override
+	@Override
 	public void sendMessage(Message aMsg) throws RemoteException, IOException {
-            this.chatroom.sendMessage(aMsg);
+		this.chatroom.sendMessage(aMsg);
 	}
 
-        @Override
+	@Override
 	public void receiveMessage(Message aMsg) throws IOException, RemoteException {
 		this.listener.receiveMessage(aMsg);
 	}
 
-        @Override
+	@Override
 	public String[] getAllUsers() throws RemoteException {
 		String[] res = new String[this.chatroom.getAllUsers().size()];
-                for (int i=0; i<this.chatroom.getAllUsers().size(); i++){
-                    res[i] = this.chatroom.getAllUsers().get(i);
-                }
-                return res;
+		for (int i=0; i<this.chatroom.getAllUsers().size(); i++){
+			res[i] = this.chatroom.getAllUsers().get(i);
+		}
+		return res;
 	}
 }

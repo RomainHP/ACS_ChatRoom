@@ -1,8 +1,7 @@
 package chatroom.server;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 
 import chatroom.exception.MaxConnectionException;
 import chatroom.exception.NicknameNotAvailableException;
@@ -12,13 +11,13 @@ public class PrivateChatRoom extends ChatRoom {
 
     private String password;
 
-    public PrivateChatRoom(String aPassword) {
-        super();
+    public PrivateChatRoom(String name, Login log, String aPassword) {
+        super(name, log);
         this.password = aPassword;
     }
 
-    public PrivateChatRoom(int aMax_connection, String aPassword) {
-        super(aMax_connection);
+    public PrivateChatRoom(String name, Login log, int aMax_connection, String aPassword) {
+        super(name, log, aMax_connection);
         this.password = aPassword;
     }
 
@@ -29,8 +28,8 @@ public class PrivateChatRoom extends ChatRoom {
 
     @Override
     synchronized public String connect(String aListener, String aNickname, String aPassword)
-            throws WrongPasswordException, MaxConnectionException, RemoteException, NicknameNotAvailableException,
-            MalformedURLException, NotBoundException {
+            throws WrongPasswordException, MaxConnectionException, NicknameNotAvailableException,
+            NotBoundException, IOException {
         if (!aPassword.equals(password)) {
             throw new WrongPasswordException();
         }
