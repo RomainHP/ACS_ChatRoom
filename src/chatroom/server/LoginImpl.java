@@ -70,6 +70,6 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
     
     @Override
     public boolean isPrivateChatroom(String chat) throws RemoteException {
-    	return this.chatrooms.get(chat) instanceof PrivateChatRoom;
+    	return (this.chatrooms.get(chat) instanceof PrivateChatRoom);
     }
 }

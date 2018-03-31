@@ -1,10 +1,7 @@
 package chatroom.client;
 
 import java.awt.Image;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 public class Message implements Serializable {
@@ -17,17 +14,21 @@ public class Message implements Serializable {
 	TypeMessage type;
 
 	String message;
+	
+	String nick;
 
 	Image image;
 
 	public Message(String msg, String nick){
+		this.nick = nick;
 		this.message = "[" + nick + "] : " + msg + "\n";
 		this.type = TypeMessage.MESSAGE;
 	}
 
-	public Message(Image image){
+	public Message(Image image, String nick){
 		this.image = image;
-		this.message = "";
+		this.nick = nick;
+		this.message = "[" + nick + "] : " + image.toString() + "\n";
 		this.type = TypeMessage.IMAGE;
 	}
 
@@ -49,15 +50,16 @@ public class Message implements Serializable {
 		return bos.toByteArray();
 	}*/
 	
-	public byte[] getByteMessage() {
-		return this.message.getBytes();
-	}
-
 	public TypeMessage getType() {
 		return this.type;
 	}
+	
+	public Image getImage() {
+		return this.image;
+	}
 
-	public String getMessage() {
+	@Override
+	public String toString() {
 		return this.message;
 	}
 

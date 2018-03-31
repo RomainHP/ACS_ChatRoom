@@ -3,8 +3,6 @@ package chatroom.client.ui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -18,7 +16,7 @@ import chatroom.exception.UncorrectNameException;
 import chatroom.exception.WrongPasswordException;
 import chatroom.server.Login;
 
-public class LoginFrame extends JFrame {
+public class LoginPanel extends JPanel {
 
 	/**
 	 *
@@ -26,14 +24,16 @@ public class LoginFrame extends JFrame {
 	private static final long serialVersionUID = -301099811934446277L;
 	
 	private JList<String> chatroomsList;
+	
+	private JButton btnConfirm;
+	
+	private JButton actualizeButton;
 
-	public LoginFrame(Login log, Client client) throws RemoteException {
-		super("Login");
-		this.setBounds(100, 100, 444, 300);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	public LoginPanel(MainFrame frame, Login log, Client client) throws RemoteException {
+		this.setLayout(new BorderLayout());
 
 		Box verticalBox = Box.createVerticalBox();
-		this.getContentPane().add(verticalBox, BorderLayout.WEST);
+		this.add(verticalBox, BorderLayout.WEST);
 
 		JLabel lblPseudo = new JLabel("Nickname :");
 		verticalBox.add(lblPseudo);
@@ -44,13 +44,13 @@ public class LoginFrame extends JFrame {
 
 		JLabel lblLogin = new JLabel("Login");
 		lblLogin.setHorizontalAlignment(SwingConstants.CENTER);
-		this.getContentPane().add(lblLogin, BorderLayout.NORTH);
+		this.add(lblLogin, BorderLayout.NORTH);
 
-		JButton btnConfirm = new JButton("Confirm");
-		this.getContentPane().add(btnConfirm, BorderLayout.SOUTH);
+		btnConfirm = new JButton("Confirm");
+		this.add(btnConfirm, BorderLayout.SOUTH);
 
 		JTabbedPane tabPane = new JTabbedPane(JTabbedPane.TOP);
-		this.getContentPane().add(tabPane, BorderLayout.CENTER);
+		this.add(tabPane, BorderLayout.CENTER);
 
 		Box chatroomScrollPane = Box.createVerticalBox();
 		tabPane.addTab("Join", null, chatroomScrollPane, null);
@@ -63,7 +63,7 @@ public class LoginFrame extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(chatroomsList);
 		chatroomScrollPane.add(scrollPane);
 		
-		JButton actualizeButton = new JButton("Actualize");
+		actualizeButton = new JButton("Actualize");
 		scrollPane.setColumnHeaderView(actualizeButton);
 
 		Box verticalBox_2 = Box.createVerticalBox();
@@ -87,7 +87,7 @@ public class LoginFrame extends JFrame {
 		actualizeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					LoginFrame.this.chatroomsList.setListData(log.getAllChatRoom());
+					LoginPanel.this.chatroomsList.setListData(log.getAllChatRoom());
 				} catch (RemoteException e) {
 					ExceptionPopup.showError(e);
 				}
@@ -108,9 +108,11 @@ public class LoginFrame extends JFrame {
 					String chat = "";
 					// password
 					String password = "";
+					// tab choose a chatroom
 					if (tabPane.getSelectedIndex() == 0) {
 						chat = chatroomsList.getSelectedValue();
 						if (log.isPrivateChatroom(chat)) password = PasswordPopup.askPassword();
+					// tab create a chatroom
 					} else {
 						chat = chatroomTextField.getText();
 						password = passwordTextField.getText();
@@ -119,6 +121,7 @@ public class LoginFrame extends JFrame {
 						if (!Client.verifyName(password))
 							throw new UncorrectNameException("password");
 					}
+					client.setNickname(pseudo);
 					// no password
 					if (password.trim().length()==0) {
 						client.connect(pseudo, chat);
@@ -126,53 +129,20 @@ public class LoginFrame extends JFrame {
 					} else {
 						client.connect(pseudo, chat, password);
 					}
-					ChatFrame chatframe = new ChatFrame(chat, client);
-					client.setOutput(chatframe.getOutput());
-					client.setNickname(pseudo);
-					LoginFrame.this.setVisible(false);
-					chatframe.setVisible(true);
+					frame.changeView(chat);
 				} catch (MaxConnectionException | WrongPasswordException
 						| NicknameNotAvailableException | NotBoundException | UncorrectNameException | IOException e) {
 					ExceptionPopup.showError(e);
 				}
 			}
 		});
-
-		//disconnect the client on close
-		this.addWindowListener(new WindowListener() {
-			@Override
-			public void windowActivated(WindowEvent e) {
-			}
-
-			@Override
-			public void windowClosed(WindowEvent e) {
-			}
-
-			@Override
-			public void windowClosing(WindowEvent e) {
-				try {
-					client.disconnect();
-				} catch (IOException e1) {
-					ExceptionPopup.showError(e1);
-				}
-
-			}
-
-			@Override
-			public void windowDeactivated(WindowEvent e) {
-			}
-
-			@Override
-			public void windowDeiconified(WindowEvent e) {
-			}
-
-			@Override
-			public void windowIconified(WindowEvent e) {
-			}
-
-			@Override
-			public void windowOpened(WindowEvent e) {
-			}
-		});
+	}
+	
+	public void setConfirmAction(ActionListener act) {
+		this.btnConfirm.addActionListener(act);
+	}
+	
+	public void setActualizeAction(ActionListener act) {
+		this.actualizeButton.addActionListener(act);
 	}
 }

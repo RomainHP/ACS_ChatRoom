@@ -1,8 +1,10 @@
 package chatroom.client;
 
+import chatroom.client.ui.ConsoleDisplay;
+import chatroom.client.ui.Display;
 import chatroom.client.ui.ExceptionPopup;
-import chatroom.client.ui.LoginFrame;
-import java.io.OutputStream;
+import chatroom.client.ui.MainFrame;
+
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -37,7 +39,7 @@ public class Client {
 
 	public Client(Login log) throws RemoteException {
 		this.login = log;
-		this.listener = new ListenerImpl(System.out);
+		this.listener = new ListenerImpl(new ConsoleDisplay());
 	}
 
 	public void setNickname(String nick){
@@ -48,7 +50,7 @@ public class Client {
 		return this.nickname;
 	}
 
-	public void setOutput(OutputStream out) throws RemoteException{
+	public void setOutput(Display out) throws RemoteException{
 		this.listener.setOutput(out);
 	}
 
@@ -77,7 +79,10 @@ public class Client {
 
 	public void connect(String pseudo, String chat) throws MaxConnectionException,
 	WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
-		this.connect(pseudo, chat, "");
+		String name = Client.name_rebind + chat + "_" + pseudo;
+		this.listen(name);
+		String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat);
+		this.session = (Session) Naming.lookup(url);
 	}
 
 	public void connect(String pseudo, String chat, String password) throws MaxConnectionException,
@@ -132,8 +137,8 @@ public class Client {
 				@Override
 				public void run() {
 					try {
-						LoginFrame logframe = new LoginFrame(log, client);
-						logframe.setVisible(true);
+						MainFrame frame = new MainFrame(log, client);
+						frame.setVisible(true);
 					} catch (Exception e) {
 						ExceptionPopup.showError(e);
 					}

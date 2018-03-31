@@ -47,11 +47,13 @@ public class ChatRoom {
 	public void disconnect(String aNickname) throws RemoteException, IOException {
 		//unexport the session of the client
 		UnicastRemoteObject.unexportObject(this.clients.get(aNickname), true);
-		//Bye message
-		this.sendMessage(new Message("Bye " + aNickname + " !"));
 		this.clients.remove(aNickname);
+		//when a chatroom is empty, we remove it
 		if (this.clients.isEmpty()) {
 			this.log.removeChatroom(this);
+		}else {
+			//Bye message
+			this.sendMessage(new Message("Bye " + aNickname + " !"));
 		}
 	}
 
@@ -75,7 +77,7 @@ public class ChatRoom {
 			Naming.rebind(name, session);
 			this.clients.put(aNickname, session);
 			//Welcome message
-			this.sendMessage(new Message("Please welcome to " + aNickname));
+			if (this.clients.size()>1) this.sendMessage(new Message("Please welcome to " + aNickname));
 			return name;
 		} else {
 			throw new NicknameNotAvailableException();

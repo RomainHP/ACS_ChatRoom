@@ -1,9 +1,10 @@
 package chatroom.client;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+
+import chatroom.client.ui.Display;
 
 public class ListenerImpl extends UnicastRemoteObject implements Listener {
 
@@ -12,20 +13,20 @@ public class ListenerImpl extends UnicastRemoteObject implements Listener {
 	 */
 	private static final long serialVersionUID = -6990192506189041301L;
 
-	private OutputStream out;
+	private Display out;
 
-	public ListenerImpl(OutputStream out) throws RemoteException {
+	public ListenerImpl(Display out) throws RemoteException {
 		this.out = out;
 	}
 
 	@Override
-	public void setOutput(OutputStream out) throws RemoteException{
+	public void setOutput(Display out) throws RemoteException{
 		this.out = out;
 	}
 
 	@Override
 	public void receiveMessage(Message aMsg) throws RemoteException, IOException {
 		// display on client interface
-		out.write(aMsg.getByteMessage());
+		out.write(aMsg);
 	}
 }
