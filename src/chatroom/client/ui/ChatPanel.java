@@ -5,12 +5,16 @@ import chatroom.client.Client;
 import java.awt.BorderLayout;
 import java.rmi.RemoteException;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.IOException;
 
 public class ChatPanel extends JPanel {
 
@@ -19,18 +23,26 @@ public class ChatPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = -301099811934446277L;
 
-	MessagePanelDisplay chatTextArea;
+	private MessagePanelDisplay chatTextArea;
+	
+	private String name;
+	
+	private Client client;
+	
+	private JList<String> usersList;
 
-	public ChatPanel(Client client) throws RemoteException {
-
+	public ChatPanel(String name, Client client) throws RemoteException {
 		this.setLayout(new BorderLayout());
+		
+		this.name = name;
+		this.client = client;
 		
 		JLabel lblChatroom = new JLabel("ChatRoom");
 		lblChatroom.setHorizontalAlignment(SwingConstants.CENTER);
 		this.add(lblChatroom, BorderLayout.NORTH);
 
-		chatTextArea = new MessagePanelDisplay();
-		this.add(chatTextArea, BorderLayout.CENTER);
+		chatTextArea = new MessagePanelDisplay(this);
+		this.add(new JScrollPane(chatTextArea), BorderLayout.CENTER);
 		client.setOutput(this.chatTextArea);
 
 		Box horizontalBox = Box.createHorizontalBox();
@@ -42,6 +54,9 @@ public class ChatPanel extends JPanel {
 
 		JButton btnSend = new JButton("Send");
 		horizontalBox.add(btnSend);
+		
+		JButton btnImg = new JButton("Img");
+		horizontalBox.add(btnImg);
 
 		Box verticalBox = Box.createVerticalBox();
 		this.add(verticalBox, BorderLayout.EAST);
@@ -49,7 +64,7 @@ public class ChatPanel extends JPanel {
 		JLabel lblUsers = new JLabel("Users :");
 		verticalBox.add(lblUsers);
 
-		JList<String> usersList = new JList<>(client.getSession().getAllUsers());
+		usersList = new JList<>(client.getSession().getAllUsers());
 
 		JScrollPane scrollPane = new JScrollPane(usersList);
 		verticalBox.add(scrollPane);
@@ -88,6 +103,41 @@ public class ChatPanel extends JPanel {
 				}
 			}
 		});
-
+		
+		btnImg.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser c = new JFileChooser();
+				//Setting Up The Filter
+				FileNameExtensionFilter imageFilter = new FileNameExtensionFilter(
+				    "Image files", ImageIO.getReaderFileSuffixes());
+				//Attaching Filter to JFileChooser object
+				c.setFileFilter((javax.swing.filechooser.FileFilter) imageFilter);
+				//Displaying Filechooser
+				int rVal = c.showOpenDialog(new JPanel());
+				if (rVal == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = c.getSelectedFile();
+					try {
+						client.sendMessage(selectedFile);
+					} catch (IOException e1) {
+						ExceptionPopup.showError(e1);
+					}
+				}
+			}
+			
+		});
+	}
+	
+	@Override
+	public String getName() {
+		return this.name;
+	}
+	
+	public Client getClient() {
+		return this.client;
+	}
+	
+	public void actualizeUsers() throws RemoteException {
+		this.usersList.setListData(this.client.getSession().getAllUsers());
 	}
 }

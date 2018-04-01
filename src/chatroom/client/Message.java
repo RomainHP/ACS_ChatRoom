@@ -1,6 +1,6 @@
 package chatroom.client;
 
-import java.awt.Image;
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -17,23 +17,24 @@ public class Message implements Serializable {
 	
 	String nick;
 
-	Image image;
+	File image;
 
 	public Message(String msg, String nick){
 		this.nick = nick;
-		this.message = "[" + nick + "] : " + msg + "\n";
+		this.message = msg;
 		this.type = TypeMessage.MESSAGE;
 	}
 
-	public Message(Image image, String nick){
+	public Message(File image, String nick){
 		this.image = image;
 		this.nick = nick;
-		this.message = "[" + nick + "] : " + image.toString() + "\n";
+		this.message = image.toString();
 		this.type = TypeMessage.IMAGE;
 	}
 
 	public Message(String msg) {
-		this.message = msg + "\n";
+		this.nick = "SYSTEM";
+		this.message = msg;
 		this.type = TypeMessage.SYSTEM;
 	}
 
@@ -54,8 +55,12 @@ public class Message implements Serializable {
 		return this.type;
 	}
 	
-	public Image getImage() {
+	public File getImage() {
 		return this.image;
+	}
+	
+	public String getNick() {
+		return this.nick;
 	}
 
 	@Override

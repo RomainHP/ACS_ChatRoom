@@ -22,15 +22,19 @@ public class LoginPanel extends JPanel {
 	 *
 	 */
 	private static final long serialVersionUID = -301099811934446277L;
-	
+
 	private JList<String> chatroomsList;
-	
+
 	private JButton btnConfirm;
-	
+
 	private JButton actualizeButton;
+	
+	private Client client;
 
 	public LoginPanel(MainFrame frame, Login log, Client client) throws RemoteException {
 		this.setLayout(new BorderLayout());
+		
+		this.client = client;
 
 		Box verticalBox = Box.createVerticalBox();
 		this.add(verticalBox, BorderLayout.WEST);
@@ -55,16 +59,22 @@ public class LoginPanel extends JPanel {
 		Box chatroomScrollPane = Box.createVerticalBox();
 		tabPane.addTab("Join", null, chatroomScrollPane, null);
 
+		Box selectBox = Box.createHorizontalBox();
+		
 		JLabel lblChatroom = new JLabel("Select a ChatRoom :");
-		chatroomScrollPane.add(lblChatroom);
+		selectBox.add(lblChatroom);
+		
+		selectBox.add(Box.createHorizontalGlue());
+		
+		actualizeButton = new JButton("Actualize");
+		selectBox.add(actualizeButton);
+		
+		chatroomScrollPane.add(selectBox, BorderLayout.NORTH);
 
 		this.chatroomsList = new JList<>(log.getAllChatRoom());
 
 		JScrollPane scrollPane = new JScrollPane(chatroomsList);
 		chatroomScrollPane.add(scrollPane);
-		
-		actualizeButton = new JButton("Actualize");
-		scrollPane.setColumnHeaderView(actualizeButton);
 
 		Box verticalBox_2 = Box.createVerticalBox();
 		tabPane.addTab("Create", null, verticalBox_2, null);
@@ -93,7 +103,7 @@ public class LoginPanel extends JPanel {
 				}
 			}
 		});
-		
+
 		// launch the chat
 		btnConfirm.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
@@ -110,9 +120,10 @@ public class LoginPanel extends JPanel {
 					String password = "";
 					// tab choose a chatroom
 					if (tabPane.getSelectedIndex() == 0) {
+						if (chatroomsList.isSelectionEmpty()) return;
 						chat = chatroomsList.getSelectedValue();
 						if (log.isPrivateChatroom(chat)) password = PasswordPopup.askPassword();
-					// tab create a chatroom
+						// tab create a chatroom
 					} else {
 						chat = chatroomTextField.getText();
 						password = passwordTextField.getText();
@@ -125,11 +136,11 @@ public class LoginPanel extends JPanel {
 					// no password
 					if (password.trim().length()==0) {
 						client.connect(pseudo, chat);
-					// password
+						// password
 					} else {
 						client.connect(pseudo, chat, password);
 					}
-					frame.changeView(chat);
+					frame.changeView(LoginPanel.this, chat);
 				} catch (MaxConnectionException | WrongPasswordException
 						| NicknameNotAvailableException | NotBoundException | UncorrectNameException | IOException e) {
 					ExceptionPopup.showError(e);
@@ -137,12 +148,21 @@ public class LoginPanel extends JPanel {
 			}
 		});
 	}
-	
+
 	public void setConfirmAction(ActionListener act) {
 		this.btnConfirm.addActionListener(act);
 	}
-	
+
 	public void setActualizeAction(ActionListener act) {
 		this.actualizeButton.addActionListener(act);
+	}
+	
+	public Client getClient() {
+		return this.client;
+	}
+
+	@Override
+	public String getName() {
+		return "Login";
 	}
 }

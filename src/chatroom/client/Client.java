@@ -21,6 +21,7 @@ import chatroom.exception.WrongPasswordException;
 import chatroom.server.Login;
 import chatroom.server.Session;
 import java.awt.EventQueue;
+import java.io.File;
 import java.io.IOException;
 
 public class Client {
@@ -102,6 +103,13 @@ public class Client {
 	}
 
 	public void sendMessage(String aMsg) throws RemoteException, IOException {
+		if (this.session != null){
+			Message msg = new Message(aMsg, this.nickname);
+			this.session.sendMessage(msg);
+		}
+	}
+	
+	public void sendMessage(File aMsg) throws RemoteException, IOException {
 		if (this.session != null){
 			Message msg = new Message(aMsg, this.nickname);
 			this.session.sendMessage(msg);

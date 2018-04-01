@@ -1,27 +1,17 @@
 package chatroom.client.ui;
 
-import chatroom.client.Message;
+import javax.swing.JPanel;
 
-public class MessagePanelDisplay extends MessagePanel implements Display {
+public class MessagePanel extends JPanel {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 6907288588243414121L;
+	private static final long serialVersionUID = -1059871847589145969L;
 
-	@Override
-	public void write(Message aMsg) {
-		switch (aMsg.getType()) {
-			case SYSTEM:
-				//TODO
-				break;
-			case MESSAGE:
-				break;
-			case IMAGE:
-				break;
-			default: 
-				break;
-		}
+	public MessagePanel() {
+		/*
+		 * TODO SCROLLPANE VERTICAL BOX ...
+		 */
 	}
-
 }
