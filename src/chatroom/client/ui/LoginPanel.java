@@ -129,8 +129,6 @@ public class LoginPanel extends JPanel {
 						password = passwordTextField.getText();
 						if (!Client.verifyName(chat))
 							throw new UncorrectNameException("chat");
-						if (!Client.verifyName(password))
-							throw new UncorrectNameException("password");
 					}
 					client.setNickname(pseudo);
 					// no password
@@ -138,6 +136,8 @@ public class LoginPanel extends JPanel {
 						client.connect(pseudo, chat);
 						// password
 					} else {
+						if (!Client.verifyName(password))
+							throw new UncorrectNameException("password");
 						client.connect(pseudo, chat, password);
 					}
 					frame.changeView(LoginPanel.this, chat);
@@ -159,10 +159,5 @@ public class LoginPanel extends JPanel {
 	
 	public Client getClient() {
 		return this.client;
-	}
-
-	@Override
-	public String getName() {
-		return "Login";
 	}
 }

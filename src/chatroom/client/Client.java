@@ -128,7 +128,7 @@ public class Client {
 	public static boolean verifyName(String name) {
 		Pattern p = Pattern.compile("[^a-zA-Z0-9]", Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(name);
-        return !m.find();
+        return (!m.find() && name.length()>0 && name.length()<16);
 	}
 
 	public static void main(String[] args) {

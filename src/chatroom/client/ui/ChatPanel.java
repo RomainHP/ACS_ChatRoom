@@ -37,7 +37,7 @@ public class ChatPanel extends JPanel {
 		this.name = name;
 		this.client = client;
 		
-		JLabel lblChatroom = new JLabel("ChatRoom");
+		JLabel lblChatroom = new JLabel("ChatRoom " + name);
 		lblChatroom.setHorizontalAlignment(SwingConstants.CENTER);
 		this.add(lblChatroom, BorderLayout.NORTH);
 
@@ -126,11 +126,6 @@ public class ChatPanel extends JPanel {
 			}
 			
 		});
-	}
-	
-	@Override
-	public String getName() {
-		return this.name;
 	}
 	
 	public Client getClient() {

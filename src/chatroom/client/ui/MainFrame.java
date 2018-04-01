@@ -9,6 +9,7 @@ import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
@@ -31,10 +32,12 @@ public class MainFrame extends JFrame{
 	private JTabbedPane tabPane;
 
 	public MainFrame(Login log, Client c) throws RemoteException {
-		super("Login");
+		super("My Cat Room");
 		this.setBounds(100, 100, 444, 300);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.client = c;
+		ImageIcon img = new ImageIcon("src/images/cat_icon.png");
+		this.setIconImage(img.getImage());
 		//tabpane
 		tabPane = new JTabbedPane(JTabbedPane.TOP);
 		tabPane.add(new LoginPanel(this, log, client), "Login");
@@ -54,7 +57,6 @@ public class MainFrame extends JFrame{
 					}
 					tabPane.setSelectedIndex(tabPane.getTabCount()-2);
 				}
-				MainFrame.this.setTitle(tabPane.getSelectedComponent().getName());
 			}
 		});
 		//close when right click
@@ -147,5 +149,6 @@ public class MainFrame extends JFrame{
 		}
 		this.tabPane.setSelectedIndex(index);
 		this.tabPane.setComponentAt(index, new ChatPanel(title, this.client));
+		this.tabPane.setTitleAt(index, title);
 	}
 }
