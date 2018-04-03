@@ -142,7 +142,7 @@ public class LoginPanel extends JPanel {
                     }
                     client.connect(pseudo, chat, password);
                 }
-                frame.changeView(LoginPanel.this, chat);
+                frame.changeView(LoginPanel.this, chat, client.getSession());
             } catch (MaxConnectionException | WrongPasswordException | NicknameNotAvailableException | NotBoundException | UncorrectNameException | IOException e) {
                 ExceptionPopup.showError(e);
             }

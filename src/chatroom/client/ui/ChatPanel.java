@@ -1,6 +1,7 @@
 package chatroom.client.ui;
 
 import chatroom.client.Client;
+import chatroom.server.Session;
 
 import java.awt.BorderLayout;
 import java.rmi.RemoteException;
@@ -31,12 +32,15 @@ public class ChatPanel extends JPanel {
     private final String name;
 
     private final Client client;
+    
+    private final Session session;
 
     private final JList<String> usersList;
 
-    public ChatPanel(String name, Client client) throws RemoteException {
+    public ChatPanel(String name, Client client, Session session) throws RemoteException {
         this.setLayout(new BorderLayout());
 
+        this.session = session;
         this.name = name;
         this.client = client;
 
@@ -45,10 +49,16 @@ public class ChatPanel extends JPanel {
         this.add(lblChatroom, BorderLayout.NORTH);
 
         chatTextArea = new MessagePanelDisplay(this);
+<<<<<<<
         JScrollPane scroll = new JScrollPane(chatTextArea);
         chatTextArea.setScrollPane(scroll);
         this.add(scroll, BorderLayout.CENTER);
         client.setOutput(this.chatTextArea);
+=======
+        this.add(new JScrollPane(chatTextArea), BorderLayout.CENTER);
+        Session clientSession = client.getSession();
+        client.setOutput(clientSession, this.chatTextArea);
+>>>>>>>
 
         Box horizontalBox = Box.createHorizontalBox();
         this.add(horizontalBox, BorderLayout.SOUTH);

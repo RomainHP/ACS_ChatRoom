@@ -23,12 +23,15 @@ import chatroom.server.Session;
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class Client {
 
+    private HashMap<Session, Listener> link;
+
     private Session session;
 
-    private final Listener listener;
+    //private final Listener listener;
 
     private final Login login;
 
@@ -40,7 +43,7 @@ public class Client {
 
     public Client(Login log) throws RemoteException {
         this.login = log;
-        this.listener = new ListenerImpl(new ConsoleDisplay());
+        this.link = new HashMap();
     }
 
     public void setNickname(String nick) {
@@ -51,11 +54,13 @@ public class Client {
         return this.nickname;
     }
 
-    public void setOutput(Display out) throws RemoteException {
-        this.listener.setOutput(out);
+    public void setOutput(Session ses, Display out) throws RemoteException {
+        if(this.link.containsKey(ses)){
+            this.link.get(ses).setOutput(out);
+        }
     }
 
-    public void listen(String name) {
+    public Listener listen(String name) {
         /*Thread t = new Thread() {
 			public void run() {
 				System.out.println("Enregistrement de l'objet.");
@@ -71,33 +76,40 @@ public class Client {
 		t.start();*/
         System.out.println("Enregistrement de l'objet.");
         try {
-            Naming.rebind(name, (Remote) Client.this.listener);
+            Listener sessionListener = new ListenerImpl(new ConsoleDisplay());
+            Naming.rebind(name, (Remote) sessionListener);
             System.out.println("listener operationnel.");
+            return sessionListener;
         } catch (RemoteException | MalformedURLException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     /**
      * Connect the client to a chatroom
+     *
      * @param pseudo client nickname
      * @param chat chatroom he wants to connect to
      * @throws MaxConnectionException
      * @throws WrongPasswordException
      * @throws NicknameNotAvailableException
      * @throws NotBoundException
-     * @throws IOException 
+     * @throws IOException
      */
-    public void connect(String pseudo, String chat) throws MaxConnectionException,
+    public Session connect(String pseudo, String chat) throws MaxConnectionException,
             WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
         String name = Client.name_rebind + chat + "_" + pseudo;
-        this.listen(name);
+        Listener sessionListener = this.listen(name);
         String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat);
         this.session = (Session) Naming.lookup(url);
+        this.link.put(this.session, sessionListener);
+        return this.session;
     }
 
     /**
      * Connect the client to a chatroom
+     *
      * @param pseudo client nickname
      * @param chat chatroom he wants to connect to
      * @param password chatroom password
@@ -105,21 +117,28 @@ public class Client {
      * @throws WrongPasswordException
      * @throws NicknameNotAvailableException
      * @throws NotBoundException
-     * @throws IOException 
+     * @throws IOException
      */
-    public void connect(String pseudo, String chat, String password) throws MaxConnectionException,
+    public Session connect(String pseudo, String chat, String password) throws MaxConnectionException,
             WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
         String name = Client.name_rebind + chat + "_" + pseudo;
-        this.listen(name);
+        Listener sessionListener = this.listen(name);
         String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat, password);
         this.session = (Session) Naming.lookup(url);
+        this.link.put(this.session, sessionListener);
+        return this.session;
     }
 
-    public void disconnect() throws IOException {
-        if (this.session != null) {
-            this.session.disconnect();
+    public void disconnect(Session aSession) throws IOException {
+        if (this.link.containsKey(aSession)) {
+            for (Session ses : this.link.keySet()) {
+                if(ses.equals(aSession)){
+                    ses.disconnect();
+                }
+            }
+            this.link.remove(aSession);
             //unexport the listener of the client
-            UnicastRemoteObject.unexportObject(this.listener, true);
+            UnicastRemoteObject.unexportObject(this.link.get(aSession), true);
         }
     }
 
@@ -143,6 +162,7 @@ public class Client {
 
     /**
      * Nickname only composed with letters and numbers (same for password)
+     *
      * @param name nickname
      * @return true if the nickname is correct
      */
