@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import chatroom.client.Message;
+import javax.swing.JScrollPane;
 
 /**
  * JPanel used to represent the chat It can display image and simple text
@@ -25,7 +26,9 @@ public class MessagePanelDisplay extends JPanel implements Display {
 
     private boolean color = true;
 
-    private ChatPanel chatpan;
+    private final ChatPanel chatpan;
+    
+    private JScrollPane scroll;
 
     public MessagePanelDisplay(ChatPanel parent) {
         this.chatpan = parent;
@@ -97,7 +100,16 @@ public class MessagePanelDisplay extends JPanel implements Display {
                     this.addText(aMsg.getNick(), aMsg.toString());
                     break;
             }
+            if(scroll!=null){
+                this.revalidate();
+                scroll.revalidate();
+                scroll.getVerticalScrollBar().setValue(scroll.getVerticalScrollBar().getMaximum());
+            }
         }
+    }
+
+    void setScrollPane(JScrollPane scroll) {
+        this.scroll = scroll;
     }
 
 }

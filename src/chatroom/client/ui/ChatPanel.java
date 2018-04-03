@@ -10,6 +10,10 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -41,7 +45,9 @@ public class ChatPanel extends JPanel {
         this.add(lblChatroom, BorderLayout.NORTH);
 
         chatTextArea = new MessagePanelDisplay(this);
-        this.add(new JScrollPane(chatTextArea), BorderLayout.CENTER);
+        JScrollPane scroll = new JScrollPane(chatTextArea);
+        chatTextArea.setScrollPane(scroll);
+        this.add(scroll, BorderLayout.CENTER);
         client.setOutput(this.chatTextArea);
 
         Box horizontalBox = Box.createHorizontalBox();
