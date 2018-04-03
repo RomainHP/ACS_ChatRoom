@@ -9,7 +9,7 @@ import chatroom.exception.WrongPasswordException;
 
 public class PrivateChatRoom extends ChatRoom {
 
-    private String password;
+    private final String password;
 
     public PrivateChatRoom(String name, Login log, String aPassword) {
         super(name, log);

@@ -20,9 +20,9 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
     private static final long serialVersionUID = -6692808680665826670L;
 
     /**
-     * Hashmap contenant pour chaque chatroom le nom correspondant
+     * Hashmap including for each chatroom its name
      */
-    private Map<String, ChatRoom> chatrooms;
+    private final Map<String, ChatRoom> chatrooms;
 
     public LoginImpl() throws RemoteException {
         this.chatrooms = new HashMap<>();
@@ -62,14 +62,14 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
         }
         return res;
     }
-    
+
     @Override
     synchronized public void removeChatroom(ChatRoom c) throws RemoteException {
-    	this.chatrooms.remove(c.getName());
+        this.chatrooms.remove(c.getName());
     }
-    
+
     @Override
     public boolean isPrivateChatroom(String chat) throws RemoteException {
-    	return (this.chatrooms.get(chat) instanceof PrivateChatRoom);
+        return (this.chatrooms.get(chat) instanceof PrivateChatRoom);
     }
 }

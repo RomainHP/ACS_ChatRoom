@@ -18,146 +18,146 @@ import chatroom.server.Login;
 
 public class LoginPanel extends JPanel {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -301099811934446277L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -301099811934446277L;
 
-	private JList<String> chatroomsList;
+    private JList<String> chatroomsList;
 
-	private JButton btnConfirm;
+    private JButton btnConfirm;
 
-	private JButton actualizeButton;
-	
-	private Client client;
+    private JButton actualizeButton;
 
-	public LoginPanel(MainFrame frame, Login log, Client client) throws RemoteException {
-		this.setLayout(new BorderLayout());
-		
-		this.client = client;
+    private Client client;
 
-		Box verticalBox = Box.createVerticalBox();
-		this.add(verticalBox, BorderLayout.WEST);
+    public LoginPanel(MainFrame frame, Login log, Client client) throws RemoteException {
+        this.setLayout(new BorderLayout());
 
-		JLabel lblPseudo = new JLabel("Nickname :");
-		verticalBox.add(lblPseudo);
+        this.client = client;
 
-		JTextField pseudoTextField = new JTextField();
-		verticalBox.add(pseudoTextField);
-		pseudoTextField.setColumns(10);
+        Box verticalBox = Box.createVerticalBox();
+        this.add(verticalBox, BorderLayout.WEST);
 
-		JLabel lblLogin = new JLabel("Login");
-		lblLogin.setHorizontalAlignment(SwingConstants.CENTER);
-		this.add(lblLogin, BorderLayout.NORTH);
+        JLabel lblPseudo = new JLabel("Nickname :");
+        verticalBox.add(lblPseudo);
 
-		btnConfirm = new JButton("Confirm");
-		this.add(btnConfirm, BorderLayout.SOUTH);
+        JTextField pseudoTextField = new JTextField();
+        verticalBox.add(pseudoTextField);
+        pseudoTextField.setColumns(10);
 
-		JTabbedPane tabPane = new JTabbedPane(JTabbedPane.TOP);
-		this.add(tabPane, BorderLayout.CENTER);
+        JLabel lblLogin = new JLabel("Login");
+        lblLogin.setHorizontalAlignment(SwingConstants.CENTER);
+        this.add(lblLogin, BorderLayout.NORTH);
 
-		Box chatroomScrollPane = Box.createVerticalBox();
-		tabPane.addTab("Join", null, chatroomScrollPane, null);
+        btnConfirm = new JButton("Confirm");
+        this.add(btnConfirm, BorderLayout.SOUTH);
 
-		Box selectBox = Box.createHorizontalBox();
-		
-		JLabel lblChatroom = new JLabel("Select a ChatRoom :");
-		selectBox.add(lblChatroom);
-		
-		selectBox.add(Box.createHorizontalGlue());
-		
-		actualizeButton = new JButton("Actualize");
-		selectBox.add(actualizeButton);
-		
-		chatroomScrollPane.add(selectBox, BorderLayout.NORTH);
+        JTabbedPane tabPane = new JTabbedPane(JTabbedPane.TOP);
+        this.add(tabPane, BorderLayout.CENTER);
 
-		this.chatroomsList = new JList<>(log.getAllChatRoom());
+        Box chatroomScrollPane = Box.createVerticalBox();
+        tabPane.addTab("Join", null, chatroomScrollPane, null);
 
-		JScrollPane scrollPane = new JScrollPane(chatroomsList);
-		chatroomScrollPane.add(scrollPane);
+        Box selectBox = Box.createHorizontalBox();
 
-		Box verticalBox_2 = Box.createVerticalBox();
-		tabPane.addTab("Create", null, verticalBox_2, null);
+        JLabel lblChatroom = new JLabel("Select a ChatRoom :");
+        selectBox.add(lblChatroom);
 
-		JLabel chatroomLabel = new JLabel("ChatRoom :");
-		verticalBox_2.add(chatroomLabel);
+        selectBox.add(Box.createHorizontalGlue());
 
-		JTextField chatroomTextField = new JTextField();
-		verticalBox_2.add(chatroomTextField);
-		chatroomTextField.setColumns(10);
+        actualizeButton = new JButton("Actualize");
+        selectBox.add(actualizeButton);
 
-		JLabel lblPassword = new JLabel("Password :");
-		verticalBox_2.add(lblPassword);
+        chatroomScrollPane.add(selectBox, BorderLayout.NORTH);
 
-		JPasswordField passwordTextField = new JPasswordField();
-		passwordTextField.setColumns(10);
-		verticalBox_2.add(passwordTextField);
+        this.chatroomsList = new JList<>(log.getAllChatRoom());
 
-		// actualize the list of chatroom
-		actualizeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					LoginPanel.this.chatroomsList.setListData(log.getAllChatRoom());
-				} catch (RemoteException e) {
-					ExceptionPopup.showError(e);
-				}
-			}
-		});
+        JScrollPane scrollPane = new JScrollPane(chatroomsList);
+        chatroomScrollPane.add(scrollPane);
 
-		// launch the chat
-		btnConfirm.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					// nickname
-					String pseudo = pseudoTextField.getText();
-					if (!Client.verifyName(pseudo))
-						throw new UncorrectNameException("nickname");
-					// chat
-					String chat = "";
-					// password
-					String password = "";
-					// tab choose a chatroom
-					if (tabPane.getSelectedIndex() == 0) {
-						if (chatroomsList.isSelectionEmpty()) return;
-						chat = chatroomsList.getSelectedValue();
-						if (log.isPrivateChatroom(chat)) password = PasswordPopup.askPassword();
-						// tab create a chatroom
-					} else {
-						chat = chatroomTextField.getText();
-						password = passwordTextField.getText();
-						if (!Client.verifyName(chat))
-							throw new UncorrectNameException("chat");
-					}
-					client.setNickname(pseudo);
-					// no password
-					if (password.trim().length()==0) {
-						client.connect(pseudo, chat);
-						// password
-					} else {
-						if (!Client.verifyName(password))
-							throw new UncorrectNameException("password");
-						client.connect(pseudo, chat, password);
-					}
-					frame.changeView(LoginPanel.this, chat);
-				} catch (MaxConnectionException | WrongPasswordException
-						| NicknameNotAvailableException | NotBoundException | UncorrectNameException | IOException e) {
-					ExceptionPopup.showError(e);
-				}
-			}
-		});
-	}
+        Box verticalBox_2 = Box.createVerticalBox();
+        tabPane.addTab("Create", null, verticalBox_2, null);
 
-	public void setConfirmAction(ActionListener act) {
-		this.btnConfirm.addActionListener(act);
-	}
+        JLabel chatroomLabel = new JLabel("ChatRoom :");
+        verticalBox_2.add(chatroomLabel);
 
-	public void setActualizeAction(ActionListener act) {
-		this.actualizeButton.addActionListener(act);
-	}
-	
-	public Client getClient() {
-		return this.client;
-	}
+        JTextField chatroomTextField = new JTextField();
+        verticalBox_2.add(chatroomTextField);
+        chatroomTextField.setColumns(10);
+
+        JLabel lblPassword = new JLabel("Password :");
+        verticalBox_2.add(lblPassword);
+
+        JPasswordField passwordTextField = new JPasswordField();
+        passwordTextField.setColumns(10);
+        verticalBox_2.add(passwordTextField);
+
+        // actualize the list of chatroom
+        actualizeButton.addActionListener((ActionEvent arg0) -> {
+            try {
+                LoginPanel.this.chatroomsList.setListData(log.getAllChatRoom());
+            } catch (RemoteException e) {
+                ExceptionPopup.showError(e);
+            }
+        });
+
+        // launch the chat
+        btnConfirm.addActionListener((ActionEvent arg0) -> {
+            try {
+                // nickname
+                String pseudo = pseudoTextField.getText();
+                if (!Client.verifyName(pseudo)) {
+                    throw new UncorrectNameException("nickname");
+                }
+                // chat
+                String chat = "";
+                // password
+                String password = "";
+                // tab choose a chatroom
+                if (tabPane.getSelectedIndex() == 0) {
+                    if (chatroomsList.isSelectionEmpty()) {
+                        return;
+                    }
+                    chat = chatroomsList.getSelectedValue();
+                    if (log.isPrivateChatroom(chat)) {
+                        password = PasswordPopup.askPassword();
+                    }
+                    // tab create a chatroom
+                } else {
+                    chat = chatroomTextField.getText();
+                    password = passwordTextField.getText();
+                    if (!Client.verifyName(chat)) {
+                        throw new UncorrectNameException("chat");
+                    }
+                }
+                client.setNickname(pseudo);
+                // no password
+                if (password.trim().length() == 0) {
+                    client.connect(pseudo, chat);
+                    // password
+                } else {
+                    if (!Client.verifyName(password)) {
+                        throw new UncorrectNameException("password");
+                    }
+                    client.connect(pseudo, chat, password);
+                }
+                frame.changeView(LoginPanel.this, chat);
+            } catch (MaxConnectionException | WrongPasswordException | NicknameNotAvailableException | NotBoundException | UncorrectNameException | IOException e) {
+                ExceptionPopup.showError(e);
+            }
+        });
+    }
+
+    public void setConfirmAction(ActionListener act) {
+        this.btnConfirm.addActionListener(act);
+    }
+
+    public void setActualizeAction(ActionListener act) {
+        this.actualizeButton.addActionListener(act);
+    }
+
+    public Client getClient() {
+        return this.client;
+    }
 }

@@ -4,5 +4,9 @@ import chatroom.client.Message;
 
 public interface Display {
 
-	public abstract void write(Message aMsg);
+    /**
+     * Write a message on the display
+     * @param aMsg written message
+     */
+    public abstract void write(Message aMsg);
 }

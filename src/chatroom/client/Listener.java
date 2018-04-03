@@ -8,7 +8,18 @@ import chatroom.client.ui.Display;
 
 public interface Listener extends Remote {
 
-	public abstract void setOutput(Display out) throws RemoteException;
+    /**
+     * Set the output (class Display)
+     * @param out new output
+     * @throws RemoteException 
+     */
+    public abstract void setOutput(Display out) throws RemoteException;
 
-	public abstract void receiveMessage(Message aMsg) throws RemoteException, IOException;
+    /**
+     * receive a message and display on the output
+     * @param aMsg message received
+     * @throws RemoteException
+     * @throws IOException 
+     */
+    public abstract void receiveMessage(Message aMsg) throws RemoteException, IOException;
 }

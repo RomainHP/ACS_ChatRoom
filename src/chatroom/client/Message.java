@@ -1,71 +1,57 @@
 package chatroom.client;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 
 public class Message implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3659547225566522546L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -3659547225566522546L;
 
-	TypeMessage type;
+    TypeMessage type;
 
-	String message;
-	
-	String nick;
+    String message;
 
-	File image;
+    String nick;
 
-	public Message(String msg, String nick){
-		this.nick = nick;
-		this.message = msg;
-		this.type = TypeMessage.MESSAGE;
-	}
+    File image;
 
-	public Message(File image, String nick){
-		this.image = image;
-		this.nick = nick;
-		this.message = image.toString();
-		this.type = TypeMessage.IMAGE;
-	}
+    public Message(String msg, String nick) {
+        this.nick = nick;
+        this.message = msg;
+        this.type = TypeMessage.MESSAGE;
+    }
 
-	public Message(String msg) {
-		this.nick = "SYSTEM";
-		this.message = msg;
-		this.type = TypeMessage.SYSTEM;
-	}
+    public Message(File image, String nick) {
+        this.image = image;
+        this.nick = nick;
+        this.message = image.toString();
+        this.type = TypeMessage.IMAGE;
+    }
 
-	/**
-	 * Convert the object to an array of byte
-	 * @return an array of byte corresponding this
-	 * @throws IOException 
-	 */
-	/*public byte[] getByteMessage() throws IOException{
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ObjectOutput out = new ObjectOutputStream(bos);
-		out.writeObject(this);
-		out.close();
-		return bos.toByteArray();
-	}*/
-	
-	public TypeMessage getType() {
-		return this.type;
-	}
-	
-	public File getImage() {
-		return this.image;
-	}
-	
-	public String getNick() {
-		return this.nick;
-	}
+    public Message(String msg) {
+        this.nick = "SYSTEM";
+        this.message = msg;
+        this.type = TypeMessage.SYSTEM;
+    }
 
-	@Override
-	public String toString() {
-		return this.message;
-	}
+    public TypeMessage getType() {
+        return this.type;
+    }
+
+    public File getImage() {
+        return this.image;
+    }
+
+    public String getNick() {
+        return this.nick;
+    }
+
+    @Override
+    public String toString() {
+        return this.message;
+    }
 
 }
