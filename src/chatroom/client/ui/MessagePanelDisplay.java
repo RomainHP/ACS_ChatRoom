@@ -41,7 +41,7 @@ public class MessagePanelDisplay extends JPanel implements Display {
      */
     private void addText(String from, String msg) {
         Box box = Box.createHorizontalBox();
-        JLabel nick = new JLabel("[" + from + "] :     ");
+        JLabel nick = new JLabel("[" + from + "] : ");
         JLabel message = new JLabel(msg);
         message.setFont(message.getFont().deriveFont(~Font.BOLD));
         box.add(nick);
@@ -69,7 +69,7 @@ public class MessagePanelDisplay extends JPanel implements Display {
         }
         box.setOpaque(true);
         color = !color;
-        JLabel nick = new JLabel("[" + from + "] :     ");
+        JLabel nick = new JLabel("[" + from + "] : ");
         ImagePanel img = new ImagePanel(msg, box.getBackground());
         box.add(nick);
         box.add(img);
