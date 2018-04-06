@@ -1,5 +1,7 @@
 package chatroom.client.ui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -12,23 +14,27 @@ import javax.swing.JButton;
  * @author rcharpen
  */
 public class SoundButton extends JButton{
-    
-    private AudioInputStream sound;
-    
-    public SoundButton(AudioInputStream sound){
+
+    private Clip clip;
+
+    private boolean play = false;
+
+    public SoundButton(AudioInputStream sound) throws LineUnavailableException, IOException {
         super("Play");
-        this.sound = sound;
+        clip = AudioSystem.getClip();
+        clip.open(sound);
+        this.addActionListener(actionEvent -> playSound());
     }
-    
-    public synchronized void playSound() {
-        new Thread(() -> {
-            try {
-                Clip clip = AudioSystem.getClip();
-                clip.open(SoundButton.this.sound);
-                clip.start(); 
-            } catch (LineUnavailableException | IOException e) {
-                ExceptionPopup.showError(e);
-            }
-        }).start();
-  }
+
+    private synchronized void playSound() {
+        if (!play){
+            this.setText("Stop");
+            this.play = true;
+            clip.start();
+        }else{
+            this.setText("Play");
+            this.play = false;
+            clip.stop();
+        }
+    }
 }

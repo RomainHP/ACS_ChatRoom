@@ -111,7 +111,7 @@ public class LoginPanel extends JPanel {
                     throw new UncorrectNameException("nickname");
                 }
                 // chat
-                String chat = "";
+                String chat;
                 // password
                 String password = "";
                 // tab choose a chatroom

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import chatroom.client.ui.Display;
+import chatroom.client.ui.display.Display;
 
 public interface Listener extends Remote {
 

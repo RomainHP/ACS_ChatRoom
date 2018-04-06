@@ -44,10 +44,6 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
 
     @Override
     public String[] getAllUsers() throws RemoteException {
-        String[] res = new String[this.chatroom.getAllUsers().size()];
-        for (int i = 0; i < this.chatroom.getAllUsers().size(); i++) {
-            res[i] = this.chatroom.getAllUsers().get(i);
-        }
-        return res;
+        return this.chatroom.getAllUsers();
     }
 }

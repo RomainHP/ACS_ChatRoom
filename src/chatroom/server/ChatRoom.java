@@ -72,9 +72,8 @@ public class ChatRoom {
      */
     public void sendMessage(Message aMsg) throws RemoteException, IOException {
         // Broadcast to all clients
-        Iterator<Session> it = clients.values().iterator();
-        while (it.hasNext()) {
-            it.next().receiveMessage(aMsg);
+        for (Session session : clients.values()) {
+            session.receiveMessage(aMsg);
         }
     }
 
@@ -140,12 +139,7 @@ public class ChatRoom {
      * return true if the chatroom is private
      * @return true if the chatroom is private
      */
-    public List<String> getAllUsers() {
-        List<String> res = new ArrayList<>();
-        Iterator<String> it = this.clients.keySet().iterator();
-        while (it.hasNext()) {
-            res.add(it.next());
-        }
-        return res;
+    public String[] getAllUsers() {
+        return (String[])this.clients.keySet().toArray(new String[0]);
     }
 }

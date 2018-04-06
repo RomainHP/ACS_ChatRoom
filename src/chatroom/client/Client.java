@@ -1,15 +1,14 @@
 package chatroom.client;
 
 import chatroom.client.message.*;
-import chatroom.client.ui.ConsoleDisplay;
-import chatroom.client.ui.Display;
+import chatroom.client.ui.display.ConsoleDisplay;
+import chatroom.client.ui.display.Display;
 import chatroom.client.ui.ExceptionPopup;
 import chatroom.client.ui.MainFrame;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.regex.Matcher;
@@ -73,7 +72,7 @@ public class Client {
 		t.start();*/
         System.out.println("Enregistrement de l'objet.");
         try {
-            Naming.rebind(name, (Remote) Client.this.listener);
+            Naming.rebind(name, Client.this.listener);
             System.out.println("listener operationnel.");
         } catch (RemoteException | MalformedURLException e) {
             e.printStackTrace();
@@ -141,7 +140,9 @@ public class Client {
     
     public void sendSoundMessage(File aMsg) throws RemoteException, UnsupportedAudioFileException, IOException {
         if (this.session != null) {
+            System.out.println("Client : " + aMsg);
             Message msg = new SoundMessage(aMsg, this.nickname);
+            System.out.println("Client : " + ((SoundMessage)msg).getSound());
             this.session.sendMessage(msg);
         }
     }

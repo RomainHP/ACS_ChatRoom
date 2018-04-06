@@ -41,7 +41,7 @@ public class ImagePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        float ratio = (float) 0.0;
+        float ratio;
         if (image.getHeight() < image.getWidth()) {
             ratio = ((float) image.getWidth()) / ((float) image.getHeight());
         } else {

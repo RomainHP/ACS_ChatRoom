@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-import chatroom.client.ui.Display;
+import chatroom.client.ui.display.Display;
 
 public class ListenerImpl extends UnicastRemoteObject implements Listener {
 

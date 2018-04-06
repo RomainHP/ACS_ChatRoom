@@ -15,7 +15,6 @@ import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import chatroom.client.Client;
 import chatroom.server.Login;
