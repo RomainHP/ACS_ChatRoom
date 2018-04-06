@@ -101,6 +101,25 @@ public class Client {
      * Connect the client to a chatroom
      * @param pseudo client nickname
      * @param chat chatroom he wants to connect to
+     * @param nb_MaxUsers number max of users
+     * @throws MaxConnectionException
+     * @throws WrongPasswordException
+     * @throws NicknameNotAvailableException
+     * @throws NotBoundException
+     * @throws IOException
+     */
+    public void connect(String pseudo, String chat, int nb_MaxUsers) throws MaxConnectionException,
+            WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
+        String name = Client.name_rebind + chat + "_" + pseudo;
+        this.listen(name);
+        String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat, nb_MaxUsers);
+        this.session = (Session) Naming.lookup(url);
+    }
+
+    /**
+     * Connect the client to a chatroom
+     * @param pseudo client nickname
+     * @param chat chatroom he wants to connect to
      * @param password chatroom password
      * @throws MaxConnectionException
      * @throws WrongPasswordException
@@ -113,6 +132,25 @@ public class Client {
         String name = Client.name_rebind + chat + "_" + pseudo;
         this.listen(name);
         String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat, password);
+        this.session = (Session) Naming.lookup(url);
+    }
+
+    /**
+     * Connect the client to a chatroom
+     * @param pseudo client nickname
+     * @param chat chatroom he wants to connect to
+     * @param nb_MaxUsers number max of users
+     * @throws MaxConnectionException
+     * @throws WrongPasswordException
+     * @throws NicknameNotAvailableException
+     * @throws NotBoundException
+     * @throws IOException
+     */
+    public void connect(String pseudo, String chat, String password, int nb_MaxUsers) throws MaxConnectionException,
+            WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
+        String name = Client.name_rebind + chat + "_" + pseudo;
+        this.listen(name);
+        String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat, password, nb_MaxUsers);
         this.session = (Session) Naming.lookup(url);
     }
 

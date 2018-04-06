@@ -78,6 +78,20 @@ public class ChatRoom {
     }
 
     /**
+     * Send a message to all clients in chatroom
+     * @param aMsg message sent
+     * @throws RemoteException
+     * @throws IOException
+     */
+    public void sendMessageTo(Message aMsg, String nickTo) throws RemoteException, IOException {
+        // Broadcast to an unique client
+        if (this.clients.containsKey(nickTo)){
+            Session session = this.clients.get(nickTo);
+            session.receiveMessage(aMsg);
+        }
+    }
+
+    /**
      * Connect a client to the chatroom
      * @param aListener client listener
      * @param aNickname client nickname
@@ -86,7 +100,7 @@ public class ChatRoom {
      * @throws WrongPasswordException
      * @throws NicknameNotAvailableException
      * @throws NotBoundException
-     * @throws IOException 
+     * @throws IOException
      */
     synchronized public String connect(String aListener, String aNickname)
             throws MaxConnectionException, WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {

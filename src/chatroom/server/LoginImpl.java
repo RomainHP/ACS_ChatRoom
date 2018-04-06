@@ -1,6 +1,7 @@
 package chatroom.server;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -40,6 +41,15 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
     }
 
     @Override
+    public String connect(String aNickname, String aListener, String aChatroom, int nb_MaxUsers) throws RemoteException, MaxConnectionException, NicknameNotAvailableException, MalformedURLException, NotBoundException, IOException, WrongPasswordException {
+        if (!this.chatrooms.containsKey(aChatroom)) {
+            this.chatrooms.put(aChatroom, new ChatRoom(aChatroom, this, nb_MaxUsers));
+        }
+        ChatRoom chat = this.chatrooms.get(aChatroom);
+        return chat.connect(aListener, aNickname);
+    }
+
+    @Override
     public String connect(String aNickname, String aListener, String aChatroom, String aPassword)
             throws MaxConnectionException, WrongPasswordException, NicknameNotAvailableException,
             NotBoundException, IOException {
@@ -47,7 +57,15 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
             this.chatrooms.put(aChatroom, new PrivateChatRoom(aChatroom, this, aPassword));
         }
         PrivateChatRoom chat = (PrivateChatRoom) this.chatrooms.get(aChatroom);
+        return chat.connect(aListener, aNickname, aPassword);
+    }
 
+    @Override
+    public String connect(String aNickname, String aListener, String aChatroom, String aPassword, int nb_MaxUsers) throws RemoteException, MaxConnectionException, WrongPasswordException, NicknameNotAvailableException, MalformedURLException, NotBoundException, IOException {
+        if (!this.chatrooms.containsKey(aChatroom)) {
+            this.chatrooms.put(aChatroom, new PrivateChatRoom(aChatroom, this, nb_MaxUsers, aPassword));
+        }
+        PrivateChatRoom chat = (PrivateChatRoom) this.chatrooms.get(aChatroom);
         return chat.connect(aListener, aNickname, aPassword);
     }
 

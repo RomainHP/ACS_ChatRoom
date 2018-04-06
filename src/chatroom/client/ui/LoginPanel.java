@@ -10,10 +10,7 @@ import java.rmi.RemoteException;
 import javax.swing.*;
 
 import chatroom.client.Client;
-import chatroom.exception.MaxConnectionException;
-import chatroom.exception.NicknameNotAvailableException;
-import chatroom.exception.UncorrectNameException;
-import chatroom.exception.WrongPasswordException;
+import chatroom.exception.*;
 import chatroom.server.Login;
 
 public class LoginPanel extends JPanel {
@@ -93,6 +90,12 @@ public class LoginPanel extends JPanel {
         passwordTextField.setColumns(10);
         verticalBox_2.add(passwordTextField);
 
+        JLabel lblMaxUsers = new JLabel("Max Users :");
+        verticalBox_2.add(lblMaxUsers);
+
+        IncrementPanel maxUsersPanel = new IncrementPanel();
+        verticalBox_2.add(maxUsersPanel);
+
         // actualize the list of chatroom
         actualizeButton.addActionListener((ActionEvent arg0) -> {
             try {
@@ -114,6 +117,8 @@ public class LoginPanel extends JPanel {
                 String chat;
                 // password
                 String password = "";
+                // number max of users
+                int max_users=0;
                 // tab choose a chatroom
                 if (tabPane.getSelectedIndex() == 0) {
                     if (chatroomsList.isSelectionEmpty()) {
@@ -130,20 +135,29 @@ public class LoginPanel extends JPanel {
                     if (!Client.verifyName(chat)) {
                         throw new UncorrectNameException("chat");
                     }
+                    max_users = maxUsersPanel.getVal();
                 }
                 client.setNickname(pseudo);
                 // no password
                 if (password.trim().length() == 0) {
-                    client.connect(pseudo, chat);
+                    if (max_users>0){
+                        client.connect(pseudo,chat,max_users);
+                    }else{
+                        throw new IncorrectMaxUsers();
+                    }
                     // password
                 } else {
                     if (!Client.verifyName(password)) {
                         throw new UncorrectNameException("password");
                     }
-                    client.connect(pseudo, chat, password);
+                    if (max_users>0){
+                        client.connect(pseudo, chat, password, max_users);
+                    }else{
+                        throw new IncorrectMaxUsers();
+                    }
                 }
                 frame.changeView(LoginPanel.this, chat);
-            } catch (MaxConnectionException | WrongPasswordException | NicknameNotAvailableException | NotBoundException | UncorrectNameException | IOException e) {
+            } catch (MaxConnectionException | WrongPasswordException | NicknameNotAvailableException | NotBoundException | UncorrectNameException | IncorrectMaxUsers | IOException e) {
                 ExceptionPopup.showError(e);
             }
         });
