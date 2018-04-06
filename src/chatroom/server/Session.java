@@ -1,6 +1,6 @@
 package chatroom.server;
 
-import chatroom.client.Message;
+import chatroom.client.message.Message;
 import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;

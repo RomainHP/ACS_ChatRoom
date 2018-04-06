@@ -6,9 +6,6 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -22,12 +19,8 @@ public class ImagePanel extends JPanel {
 
     private BufferedImage image;
 
-    public ImagePanel(File file, Color color) {
-        try {
-            image = ImageIO.read(file);
-        } catch (IOException e) {
-            ExceptionPopup.showError(e);
-        }
+    public ImagePanel(BufferedImage image, Color color) {
+        this.image = image;
         this.setPreferredSize(new Dimension(100, 100));
         this.setMaximumSize(new Dimension(100, 100));
         this.setBackground(color);

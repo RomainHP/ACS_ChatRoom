@@ -1,6 +1,6 @@
 package chatroom.server;
 
-import chatroom.client.Message;
+import chatroom.client.message.*;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -60,7 +60,7 @@ public class ChatRoom {
             this.log.removeChatroom(this);
         } else {
             //Bye message
-            this.sendMessage(new Message("Bye " + aNickname + " !"));
+            this.sendMessage(new SystemMessage("Bye " + aNickname + " !"));
         }
     }
 
@@ -102,7 +102,7 @@ public class ChatRoom {
             this.clients.put(aNickname, session);
             //Welcome message
             if (this.clients.size() > 1) {
-                this.sendMessage(new Message("Please welcome to " + aNickname));
+                this.sendMessage(new SystemMessage("Please welcome to " + aNickname));
             }
             return clientname;
         } else {

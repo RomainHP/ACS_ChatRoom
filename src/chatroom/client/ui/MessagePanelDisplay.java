@@ -2,7 +2,7 @@ package chatroom.client.ui;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.io.File;
+import java.awt.image.BufferedImage;
 import java.rmi.RemoteException;
 
 import javax.swing.BorderFactory;
@@ -11,7 +11,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import chatroom.client.Message;
+import chatroom.client.message.*;
 import javax.swing.JScrollPane;
 
 /**
@@ -27,7 +27,7 @@ public class MessagePanelDisplay extends JPanel implements Display {
     private boolean color = true;
 
     private final ChatPanel chatpan;
-    
+
     private JScrollPane scroll;
 
     public MessagePanelDisplay(ChatPanel parent) {
@@ -65,7 +65,7 @@ public class MessagePanelDisplay extends JPanel implements Display {
      * @param from client who send the message
      * @param msg message
      */
-    private void addImage(String from, File msg) {
+    private void addImage(String from, BufferedImage msg) {
         Box box = Box.createHorizontalBox();
         if (color) {
             box.setBackground(Color.LIGHT_GRAY);
@@ -83,24 +83,22 @@ public class MessagePanelDisplay extends JPanel implements Display {
 
     @Override
     public void write(Message aMsg) {
-        if (null != aMsg.getType()) {
-            switch (aMsg.getType()) {
-                case SYSTEM:
-                    this.addText(aMsg.getNick(), aMsg.toString());
-                    try {
-                        chatpan.actualizeUsers();
-                    } catch (RemoteException e) {
-                        ExceptionPopup.showError(e);
-                    }
-                    break;
-                case IMAGE:
-                    this.addImage(aMsg.getNick(), aMsg.getImage());
-                    break;
-                default:
-                    this.addText(aMsg.getNick(), aMsg.toString());
-                    break;
+        if (null != aMsg) {
+            if (aMsg instanceof SoundMessage) {
+
+            } else if (aMsg instanceof SystemMessage) {
+                this.addText(aMsg.getNick(), aMsg.toString());
+                try {
+                    chatpan.actualizeUsers();
+                } catch (RemoteException e) {
+                    ExceptionPopup.showError(e);
+                }
+            } else if (aMsg instanceof ImageMessage) {
+                this.addImage(aMsg.getNick(), ((ImageMessage)aMsg).getImage());
+            } else { //Message
+                this.addText(aMsg.getNick(), aMsg.toString());
             }
-            if(scroll!=null){
+            if (scroll != null) {
                 this.revalidate();
                 scroll.revalidate();
                 scroll.getVerticalScrollBar().setValue(scroll.getVerticalScrollBar().getMaximum());

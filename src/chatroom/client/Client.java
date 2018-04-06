@@ -1,5 +1,6 @@
 package chatroom.client;
 
+import chatroom.client.message.*;
 import chatroom.client.ui.ConsoleDisplay;
 import chatroom.client.ui.Display;
 import chatroom.client.ui.ExceptionPopup;
@@ -23,15 +24,13 @@ import chatroom.server.Session;
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class Client {
 
-    private HashMap<Session, Listener> link;
-
     private Session session;
 
-    //private final Listener listener;
+    private final Listener listener;
 
     private final Login login;
 
@@ -43,7 +42,7 @@ public class Client {
 
     public Client(Login log) throws RemoteException {
         this.login = log;
-        this.link = new HashMap();
+        this.listener = new ListenerImpl(new ConsoleDisplay());
     }
 
     public void setNickname(String nick) {
@@ -54,13 +53,11 @@ public class Client {
         return this.nickname;
     }
 
-    public void setOutput(Session ses, Display out) throws RemoteException {
-        if(this.link.containsKey(ses)){
-            this.link.get(ses).setOutput(out);
-        }
+    public void setOutput(Display out) throws RemoteException {
+        this.listener.setOutput(out);
     }
 
-    public Listener listen(String name) {
+    public void listen(String name) {
         /*Thread t = new Thread() {
 			public void run() {
 				System.out.println("Enregistrement de l'objet.");
@@ -76,40 +73,33 @@ public class Client {
 		t.start();*/
         System.out.println("Enregistrement de l'objet.");
         try {
-            Listener sessionListener = new ListenerImpl(new ConsoleDisplay());
-            Naming.rebind(name, (Remote) sessionListener);
+            Naming.rebind(name, (Remote) Client.this.listener);
             System.out.println("listener operationnel.");
-            return sessionListener;
         } catch (RemoteException | MalformedURLException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     /**
      * Connect the client to a chatroom
-     *
      * @param pseudo client nickname
      * @param chat chatroom he wants to connect to
      * @throws MaxConnectionException
      * @throws WrongPasswordException
      * @throws NicknameNotAvailableException
      * @throws NotBoundException
-     * @throws IOException
+     * @throws IOException 
      */
-    public Session connect(String pseudo, String chat) throws MaxConnectionException,
+    public void connect(String pseudo, String chat) throws MaxConnectionException,
             WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
         String name = Client.name_rebind + chat + "_" + pseudo;
-        Listener sessionListener = this.listen(name);
+        this.listen(name);
         String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat);
         this.session = (Session) Naming.lookup(url);
-        this.link.put(this.session, sessionListener);
-        return this.session;
     }
 
     /**
      * Connect the client to a chatroom
-     *
      * @param pseudo client nickname
      * @param chat chatroom he wants to connect to
      * @param password chatroom password
@@ -117,28 +107,21 @@ public class Client {
      * @throws WrongPasswordException
      * @throws NicknameNotAvailableException
      * @throws NotBoundException
-     * @throws IOException
+     * @throws IOException 
      */
-    public Session connect(String pseudo, String chat, String password) throws MaxConnectionException,
+    public void connect(String pseudo, String chat, String password) throws MaxConnectionException,
             WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
         String name = Client.name_rebind + chat + "_" + pseudo;
-        Listener sessionListener = this.listen(name);
+        this.listen(name);
         String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat, password);
         this.session = (Session) Naming.lookup(url);
-        this.link.put(this.session, sessionListener);
-        return this.session;
     }
 
-    public void disconnect(Session aSession) throws IOException {
-        if (this.link.containsKey(aSession)) {
-            for (Session ses : this.link.keySet()) {
-                if(ses.equals(aSession)){
-                    ses.disconnect();
-                }
-            }
-            this.link.remove(aSession);
+    public void disconnect() throws IOException {
+        if (this.session != null) {
+            this.session.disconnect();
             //unexport the listener of the client
-            UnicastRemoteObject.unexportObject(this.link.get(aSession), true);
+            UnicastRemoteObject.unexportObject(this.listener, true);
         }
     }
 
@@ -149,9 +132,16 @@ public class Client {
         }
     }
 
-    public void sendMessage(File aMsg) throws RemoteException, IOException {
+    public void sendImageMessage(File aMsg) throws RemoteException, IOException {
         if (this.session != null) {
-            Message msg = new Message(aMsg, this.nickname);
+            Message msg = new ImageMessage(aMsg, this.nickname);
+            this.session.sendMessage(msg);
+        }
+    }
+    
+    public void sendSoundMessage(File aMsg) throws RemoteException, UnsupportedAudioFileException, IOException {
+        if (this.session != null) {
+            Message msg = new SoundMessage(aMsg, this.nickname);
             this.session.sendMessage(msg);
         }
     }
@@ -162,7 +152,6 @@ public class Client {
 
     /**
      * Nickname only composed with letters and numbers (same for password)
-     *
      * @param name nickname
      * @return true if the nickname is correct
      */

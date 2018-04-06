@@ -1,6 +1,6 @@
 package chatroom.client.ui;
 
-import chatroom.client.Message;
+import chatroom.client.message.Message;
 
 public interface Display {
 

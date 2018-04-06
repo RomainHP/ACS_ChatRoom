@@ -7,7 +7,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import chatroom.client.Listener;
-import chatroom.client.Message;
+import chatroom.client.message.Message;
 
 public class SessionImpl extends UnicastRemoteObject implements Session {
 
