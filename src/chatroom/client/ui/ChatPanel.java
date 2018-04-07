@@ -4,18 +4,16 @@ import chatroom.client.Client;
 import chatroom.client.ui.display.MessagePanelDisplay;
 import chatroom.exception.NotFoundUserException;
 
-import java.awt.BorderLayout;
-import java.awt.event.*;
-import java.rmi.RemoteException;
-
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Arrays;
 
 /**
@@ -73,30 +71,18 @@ public class ChatPanel extends JPanel {
         usersList.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
-                if (mouseEvent.getButton()==MouseEvent.BUTTON3){
+                if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
                     usersList.clearSelection();
                 }
             }
-
             @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-
-            }
-
+            public void mousePressed(MouseEvent mouseEvent) {}
             @Override
-            public void mouseReleased(MouseEvent mouseEvent) {
-
-            }
-
+            public void mouseReleased(MouseEvent mouseEvent) {}
             @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-
-            }
-
+            public void mouseEntered(MouseEvent mouseEvent) {}
             @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-
-            }
+            public void mouseExited(MouseEvent mouseEvent) {}
         });
 
         JScrollPane scrollPane = new JScrollPane(usersList);
@@ -107,9 +93,9 @@ public class ChatPanel extends JPanel {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     try {
-                        if (usersList.isSelectionEmpty()){
+                        if (usersList.isSelectionEmpty()) {
                             client.sendMessage(msgTextField.getText());
-                        }else{
+                        } else {
                             client.sendMessage(msgTextField.getText(), usersList.getSelectedValue());
                         }
                         msgTextField.setText("");
@@ -118,22 +104,18 @@ public class ChatPanel extends JPanel {
                     }
                 }
             }
-
             @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
+            public void keyTyped(KeyEvent e) {}
             @Override
-            public void keyReleased(KeyEvent e) {
-            }
+            public void keyReleased(KeyEvent e) {}
 
         });
         // send a message with the button
         btnSend.addActionListener((ActionEvent e) -> {
             try {
-                if (usersList.isSelectionEmpty()){
+                if (usersList.isSelectionEmpty()) {
                     client.sendMessage(msgTextField.getText());
-                }else{
+                } else {
                     client.sendMessage(msgTextField.getText(), usersList.getSelectedValue());
                 }
                 msgTextField.setText(""); // clean the text field
@@ -150,14 +132,15 @@ public class ChatPanel extends JPanel {
                     "Image files", ImageIO.getReaderFileSuffixes());
             //Attaching Filter to JFileChooser object
             c.setFileFilter(imageFilter);
+            c.setAcceptAllFileFilterUsed(false);
             //Displaying Filechooser
             int rVal = c.showOpenDialog(new JPanel());
             if (rVal == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = c.getSelectedFile();
                 try {
-                    if (usersList.isSelectionEmpty()){
+                    if (usersList.isSelectionEmpty()) {
                         client.sendImageMessage(selectedFile);
-                    }else{
+                    } else {
                         client.sendImageMessage(selectedFile, usersList.getSelectedValue());
                     }
                 } catch (IOException | NotFoundUserException e1) {
@@ -171,18 +154,18 @@ public class ChatPanel extends JPanel {
             JFileChooser c = new JFileChooser();
             //Setting Up The Filter
             FileNameExtensionFilter soundFilter = new FileNameExtensionFilter(
-                    "MP3 files", Arrays.toString(AudioSystem.getAudioFileTypes()));
-            //TODO file filter wav
+                    "Wav files", "wav");
             //Attaching Filter to JFileChooser object
-            //c.setFileFilter((javax.swing.filechooser.FileFilter) soundFilter);
+            c.setFileFilter(soundFilter);
+            c.setAcceptAllFileFilterUsed(false);
             //Displaying Filechooser
             int rVal = c.showOpenDialog(new JPanel());
             if (rVal == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = c.getSelectedFile();
                 try {
-                    if (usersList.isSelectionEmpty()){
+                    if (usersList.isSelectionEmpty()) {
                         client.sendSoundMessage(selectedFile);
-                    }else{
+                    } else {
                         client.sendSoundMessage(selectedFile, usersList.getSelectedValue());
                     }
                 } catch (IOException | UnsupportedAudioFileException | NotFoundUserException e1) {

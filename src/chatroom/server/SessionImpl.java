@@ -1,14 +1,15 @@
 package chatroom.server;
 
+import chatroom.client.Listener;
+import chatroom.client.message.Message;
+import chatroom.exception.NotFoundUserException;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import chatroom.client.Listener;
-import chatroom.client.message.Message;
-import chatroom.exception.NotFoundUserException;
 
 public class SessionImpl extends UnicastRemoteObject implements Session {
 
@@ -34,6 +35,7 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
 
     /**
      * Constructor of SessionImpl class
+     *
      * @param aChatroom chatroom linked
      * @param aListener name of rmi url of client listener
      * @param aNickname client nickname in the chatroom

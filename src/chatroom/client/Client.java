@@ -1,11 +1,20 @@
 package chatroom.client;
 
-import chatroom.client.message.*;
-import chatroom.client.ui.display.ConsoleDisplay;
-import chatroom.client.ui.display.Display;
+import chatroom.client.message.ImageMessage;
+import chatroom.client.message.Message;
+import chatroom.client.message.SoundMessage;
 import chatroom.client.ui.ExceptionPopup;
 import chatroom.client.ui.MainFrame;
+import chatroom.client.ui.display.ConsoleDisplay;
+import chatroom.client.ui.display.Display;
+import chatroom.exception.*;
+import chatroom.server.Login;
+import chatroom.server.Session;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -13,14 +22,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import chatroom.exception.*;
-import chatroom.server.Login;
-import chatroom.server.Session;
-import java.awt.EventQueue;
-import java.io.File;
-import java.io.IOException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class Client {
 
@@ -32,7 +33,7 @@ public class Client {
 
     private String nickname;
 
-    public static String server_name;
+    private static String server_name;
 
     public static String name_rebind = "listener_";
 
@@ -43,10 +44,6 @@ public class Client {
 
     public void setNickname(String nick) {
         this.nickname = nick;
-    }
-
-    public String getNickname() {
-        return this.nickname;
     }
 
     public void setOutput(Display out) throws RemoteException {
@@ -78,13 +75,14 @@ public class Client {
 
     /**
      * Connect the client to a chatroom
+     *
      * @param pseudo client nickname
-     * @param chat chatroom he wants to connect to
+     * @param chat   chatroom he wants to connect to
      * @throws MaxConnectionException
      * @throws WrongPasswordException
      * @throws NicknameNotAvailableException
      * @throws NotBoundException
-     * @throws IOException 
+     * @throws IOException
      */
     public void connect(String pseudo, String chat) throws MaxConnectionException,
             WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
@@ -96,8 +94,9 @@ public class Client {
 
     /**
      * Connect the client to a chatroom
-     * @param pseudo client nickname
-     * @param chat chatroom he wants to connect to
+     *
+     * @param pseudo      client nickname
+     * @param chat        chatroom he wants to connect to
      * @param nb_MaxUsers number max of users
      * @throws MaxConnectionException
      * @throws WrongPasswordException
@@ -115,14 +114,15 @@ public class Client {
 
     /**
      * Connect the client to a chatroom
-     * @param pseudo client nickname
-     * @param chat chatroom he wants to connect to
+     *
+     * @param pseudo   client nickname
+     * @param chat     chatroom he wants to connect to
      * @param password chatroom password
      * @throws MaxConnectionException
      * @throws WrongPasswordException
      * @throws NicknameNotAvailableException
      * @throws NotBoundException
-     * @throws IOException 
+     * @throws IOException
      */
     public void connect(String pseudo, String chat, String password) throws MaxConnectionException,
             WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
@@ -134,8 +134,9 @@ public class Client {
 
     /**
      * Connect the client to a chatroom
-     * @param pseudo client nickname
-     * @param chat chatroom he wants to connect to
+     *
+     * @param pseudo      client nickname
+     * @param chat        chatroom he wants to connect to
      * @param nb_MaxUsers number max of users
      * @throws MaxConnectionException
      * @throws WrongPasswordException
@@ -159,7 +160,7 @@ public class Client {
         }
     }
 
-    public void sendMessage(String aMsg) throws RemoteException, IOException {
+    public void sendMessage(String aMsg) throws IOException {
         if (this.session != null) {
             Message msg = new Message(aMsg, this.nickname);
             this.session.sendMessage(msg);
@@ -172,12 +173,12 @@ public class Client {
             this.session.sendMessage(msg);
         }
     }
-    
+
     public void sendSoundMessage(File aMsg) throws RemoteException, UnsupportedAudioFileException, IOException {
         if (this.session != null) {
             System.out.println("Client : " + aMsg);
             Message msg = new SoundMessage(aMsg, this.nickname);
-            System.out.println("Client : " + ((SoundMessage)msg).getSound());
+            System.out.println("Client : " + ((SoundMessage) msg).getSound());
             this.session.sendMessage(msg);
         }
     }
@@ -188,6 +189,7 @@ public class Client {
 
     /**
      * Nickname only composed with letters and numbers (same for password)
+     *
      * @param name nickname
      * @return true if the nickname is correct
      */
@@ -199,7 +201,8 @@ public class Client {
 
     /**
      * Send an image message to one person present in the chatroom
-     * @param aMsg message to send
+     *
+     * @param aMsg   message to send
      * @param nickTo nickname of the user who receive the message
      * @throws IOException
      */
@@ -212,7 +215,8 @@ public class Client {
 
     /**
      * Send a sound message to one person present in the chatroom
-     * @param aMsg message to send
+     *
+     * @param aMsg   message to send
      * @param nickTo nickname of the user who receive the message
      * @throws IOException
      * @throws UnsupportedAudioFileException
@@ -226,7 +230,8 @@ public class Client {
 
     /**
      * Send a message to one person present in the chatroom
-     * @param aMsg message to send
+     *
+     * @param aMsg   message to send
      * @param nickTo nickname of the user who receive the message
      * @throws IOException
      */

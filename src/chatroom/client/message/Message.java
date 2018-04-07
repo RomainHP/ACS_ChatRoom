@@ -13,7 +13,7 @@ public class Message implements Serializable {
 
     private String nick;
 
-    protected boolean isPrivate=false;
+    protected boolean isPrivate = false;
 
     public Message(String msg, String nick) {
         this.nick = nick;
@@ -21,7 +21,7 @@ public class Message implements Serializable {
     }
 
     public Message(String aMsg, String nickname, boolean priv) {
-        this(aMsg,nickname);
+        this(aMsg, nickname);
         this.isPrivate = priv;
     }
 
@@ -34,7 +34,7 @@ public class Message implements Serializable {
         return this.message;
     }
 
-    public boolean getIsPrivate(){
+    public boolean getIsPrivate() {
         return this.isPrivate;
     }
 

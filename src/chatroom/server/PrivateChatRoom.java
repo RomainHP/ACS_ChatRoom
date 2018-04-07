@@ -1,11 +1,11 @@
 package chatroom.server;
 
-import java.io.IOException;
-import java.rmi.NotBoundException;
-
 import chatroom.exception.MaxConnectionException;
 import chatroom.exception.NicknameNotAvailableException;
 import chatroom.exception.WrongPasswordException;
+
+import java.io.IOException;
+import java.rmi.NotBoundException;
 
 public class PrivateChatRoom extends ChatRoom {
 

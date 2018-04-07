@@ -1,23 +1,17 @@
 package chatroom.client.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
+import chatroom.client.Client;
+import chatroom.server.Login;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.rmi.RemoteException;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-
-import chatroom.client.Client;
-import chatroom.server.Login;
 
 public class MainFrame extends JFrame {
 
@@ -133,7 +127,7 @@ public class MainFrame extends JFrame {
     /**
      * Change login to chat
      *
-     * @param log the login panel we change to chat panel
+     * @param log   the login panel we change to chat panel
      * @param title the name of the chatroom
      * @throws RemoteException
      */

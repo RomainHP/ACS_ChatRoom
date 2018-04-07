@@ -1,25 +1,25 @@
 package chatroom.client.message;
 
-import java.io.*;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.File;
+import java.io.IOException;
 
 /**
- *
  * @author rcharpen
  */
-public class SoundMessage extends Message{
-    
+public class SoundMessage extends Message {
+
     private File sound;
 
-    public SoundMessage(File file, String nick) throws UnsupportedAudioFileException, IOException {
+    public SoundMessage(File file, String nick) {
         super(file.toString(), nick);
         //convert file to sound
         sound = file;
     }
 
-    public SoundMessage(File file, String nick, boolean priv) throws IOException, UnsupportedAudioFileException {
+    public SoundMessage(File file, String nick, boolean priv) throws IOException {
         super(file.toString(), nick, priv);
         //convert file to sound
         sound = file;
@@ -28,5 +28,5 @@ public class SoundMessage extends Message{
     public AudioInputStream getSound() throws IOException, UnsupportedAudioFileException {
         return AudioSystem.getAudioInputStream(sound.getAbsoluteFile());
     }
-    
+
 }

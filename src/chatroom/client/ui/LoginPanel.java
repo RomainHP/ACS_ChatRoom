@@ -1,17 +1,16 @@
 package chatroom.client.ui;
 
-import java.awt.BorderLayout;
+import chatroom.client.Client;
+import chatroom.exception.*;
+import chatroom.server.Login;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-
-import javax.swing.*;
-
-import chatroom.client.Client;
-import chatroom.exception.*;
-import chatroom.server.Login;
 
 /**
  * Login interface
@@ -121,7 +120,7 @@ public class LoginPanel extends JPanel {
                 // password
                 String password = "";
                 // number max of users
-                int max_users=10;
+                int max_users = 10;
                 // tab choose a chatroom
                 if (tabPane.getSelectedIndex() == 0) {
                     if (chatroomsList.isSelectionEmpty()) {
@@ -143,9 +142,9 @@ public class LoginPanel extends JPanel {
                 client.setNickname(pseudo);
                 // no password
                 if (password.trim().length() == 0) {
-                    if (max_users>0){
-                        client.connect(pseudo,chat,max_users);
-                    }else{
+                    if (max_users > 0) {
+                        client.connect(pseudo, chat, max_users);
+                    } else {
                         throw new IncorrectMaxUsers();
                     }
                     // password
@@ -153,9 +152,9 @@ public class LoginPanel extends JPanel {
                     if (!Client.verifyName(password)) {
                         throw new UncorrectNameException("password");
                     }
-                    if (max_users>0){
+                    if (max_users > 0) {
                         client.connect(pseudo, chat, password, max_users);
-                    }else{
+                    } else {
                         throw new IncorrectMaxUsers();
                     }
                 }

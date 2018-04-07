@@ -1,19 +1,16 @@
 package chatroom.client.ui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
-import javax.swing.JButton;
+import javax.swing.*;
+import java.io.IOException;
 
 /**
- *
  * @author rcharpen
  */
-public class SoundButton extends JButton{
+public class SoundButton extends JButton {
 
     private Clip clip;
 
@@ -27,11 +24,11 @@ public class SoundButton extends JButton{
     }
 
     private synchronized void playSound() {
-        if (!play){
+        if (!play) {
             this.setText("Stop");
             this.play = true;
             clip.start();
-        }else{
+        } else {
             this.setText("Play");
             this.play = false;
             clip.stop();

@@ -1,19 +1,18 @@
 package chatroom.client.message;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
 
 /**
- *
  * @author rcharpen
  */
 public class ImageMessage extends Message {
 
     private File image;
 
-    public ImageMessage(File file, String nick) throws IOException {
+    public ImageMessage(File file, String nick) {
         super(file.toString(), nick);
         //convert file to image
         this.image = file;

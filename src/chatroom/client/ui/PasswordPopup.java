@@ -1,9 +1,6 @@
 package chatroom.client.ui;
 
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
+import javax.swing.*;
 
 public class PasswordPopup {
 

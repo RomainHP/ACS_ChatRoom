@@ -1,17 +1,16 @@
 package chatroom.server;
 
+import chatroom.exception.MaxConnectionException;
+import chatroom.exception.NicknameNotAvailableException;
+import chatroom.exception.WrongPasswordException;
+
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import chatroom.exception.MaxConnectionException;
-import chatroom.exception.NicknameNotAvailableException;
-import chatroom.exception.WrongPasswordException;
 
 public class LoginImpl extends UnicastRemoteObject implements Login {
 
@@ -41,7 +40,8 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
     }
 
     @Override
-    public String connect(String aNickname, String aListener, String aChatroom, int nb_MaxUsers) throws RemoteException, MaxConnectionException, NicknameNotAvailableException, MalformedURLException, NotBoundException, IOException, WrongPasswordException {
+    public String connect(String aNickname, String aListener, String aChatroom, int nb_MaxUsers)
+            throws IOException, MaxConnectionException, NicknameNotAvailableException, NotBoundException, WrongPasswordException {
         if (!this.chatrooms.containsKey(aChatroom)) {
             this.chatrooms.put(aChatroom, new ChatRoom(aChatroom, this, nb_MaxUsers));
         }
@@ -61,7 +61,8 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
     }
 
     @Override
-    public String connect(String aNickname, String aListener, String aChatroom, String aPassword, int nb_MaxUsers) throws RemoteException, MaxConnectionException, WrongPasswordException, NicknameNotAvailableException, MalformedURLException, NotBoundException, IOException {
+    public String connect(String aNickname, String aListener, String aChatroom, String aPassword, int nb_MaxUsers)
+            throws IOException, MaxConnectionException, WrongPasswordException, NicknameNotAvailableException, NotBoundException {
         if (!this.chatrooms.containsKey(aChatroom)) {
             this.chatrooms.put(aChatroom, new PrivateChatRoom(aChatroom, this, nb_MaxUsers, aPassword));
         }
