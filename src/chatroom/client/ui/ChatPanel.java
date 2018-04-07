@@ -2,8 +2,10 @@ package chatroom.client.ui;
 
 import chatroom.client.Client;
 import chatroom.client.ui.display.MessagePanelDisplay;
+import chatroom.exception.NotFoundUserException;
 
 import java.awt.BorderLayout;
+import java.awt.event.*;
 import java.rmi.RemoteException;
 
 import javax.imageio.ImageIO;
@@ -12,13 +14,13 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
+/**
+ * Chat interface (display a chatroom)
+ */
 public class ChatPanel extends JPanel {
 
     /**
@@ -68,6 +70,34 @@ public class ChatPanel extends JPanel {
         verticalBox.add(lblUsers);
 
         usersList = new JList<>(client.getSession().getAllUsers());
+        usersList.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                if (mouseEvent.getButton()==MouseEvent.BUTTON3){
+                    usersList.clearSelection();
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent mouseEvent) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+
+            }
+        });
 
         JScrollPane scrollPane = new JScrollPane(usersList);
         verticalBox.add(scrollPane);
@@ -77,7 +107,11 @@ public class ChatPanel extends JPanel {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     try {
-                        client.sendMessage(msgTextField.getText());
+                        if (usersList.isSelectionEmpty()){
+                            client.sendMessage(msgTextField.getText());
+                        }else{
+                            client.sendMessage(msgTextField.getText(), usersList.getSelectedValue());
+                        }
                         msgTextField.setText("");
                     } catch (Exception ex) {
                         ExceptionPopup.showError(ex);
@@ -97,7 +131,11 @@ public class ChatPanel extends JPanel {
         // send a message with the button
         btnSend.addActionListener((ActionEvent e) -> {
             try {
-                client.sendMessage(msgTextField.getText());
+                if (usersList.isSelectionEmpty()){
+                    client.sendMessage(msgTextField.getText());
+                }else{
+                    client.sendMessage(msgTextField.getText(), usersList.getSelectedValue());
+                }
                 msgTextField.setText(""); // clean the text field
             } catch (Exception ex) {
                 ExceptionPopup.showError(ex);
@@ -117,8 +155,12 @@ public class ChatPanel extends JPanel {
             if (rVal == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = c.getSelectedFile();
                 try {
-                    client.sendImageMessage(selectedFile);
-                } catch (IOException e1) {
+                    if (usersList.isSelectionEmpty()){
+                        client.sendImageMessage(selectedFile);
+                    }else{
+                        client.sendImageMessage(selectedFile, usersList.getSelectedValue());
+                    }
+                } catch (IOException | NotFoundUserException e1) {
                     ExceptionPopup.showError(e1);
                 }
             }
@@ -138,8 +180,12 @@ public class ChatPanel extends JPanel {
             if (rVal == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = c.getSelectedFile();
                 try {
-                    client.sendSoundMessage(c.getSelectedFile());
-                } catch (IOException | UnsupportedAudioFileException e1) {
+                    if (usersList.isSelectionEmpty()){
+                        client.sendSoundMessage(selectedFile);
+                    }else{
+                        client.sendSoundMessage(selectedFile, usersList.getSelectedValue());
+                    }
+                } catch (IOException | UnsupportedAudioFileException | NotFoundUserException e1) {
                     ExceptionPopup.showError(e1);
                 }
             }

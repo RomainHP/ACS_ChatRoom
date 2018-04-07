@@ -13,6 +13,7 @@ import java.util.Map;
 
 import chatroom.exception.MaxConnectionException;
 import chatroom.exception.NicknameNotAvailableException;
+import chatroom.exception.NotFoundUserException;
 import chatroom.exception.WrongPasswordException;
 import java.io.IOException;
 
@@ -78,16 +79,24 @@ public class ChatRoom {
     }
 
     /**
-     * Send a message to all clients in chatroom
+     * Send a message between 2 clients of the chatroom
      * @param aMsg message sent
+     * @param nickFrom
+     * @param nickTo
      * @throws RemoteException
      * @throws IOException
      */
-    public void sendMessageTo(Message aMsg, String nickTo) throws RemoteException, IOException {
-        // Broadcast to an unique client
-        if (this.clients.containsKey(nickTo)){
-            Session session = this.clients.get(nickTo);
-            session.receiveMessage(aMsg);
+    public void sendMessage(Message aMsg, String nickFrom, String nickTo) throws RemoteException, IOException, NotFoundUserException {
+        // Broadcast to the two nickname
+        if (this.clients.containsKey(nickFrom) && this.clients.containsKey(nickTo)){
+            if (!nickFrom.equals(nickTo)){
+                Session session1 = this.clients.get(nickFrom);
+                session1.receiveMessage(aMsg);
+            }
+            Session session2 = this.clients.get(nickTo);
+            session2.receiveMessage(aMsg);
+        }else{
+            throw new NotFoundUserException();
         }
     }
 

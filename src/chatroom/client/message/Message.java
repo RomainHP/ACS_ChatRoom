@@ -13,9 +13,16 @@ public class Message implements Serializable {
 
     private String nick;
 
+    protected boolean isPrivate=false;
+
     public Message(String msg, String nick) {
         this.nick = nick;
         this.message = msg;
+    }
+
+    public Message(String aMsg, String nickname, boolean priv) {
+        this(aMsg,nickname);
+        this.isPrivate = priv;
     }
 
     public String getNick() {
@@ -25,6 +32,10 @@ public class Message implements Serializable {
     @Override
     public String toString() {
         return this.message;
+    }
+
+    public boolean getIsPrivate(){
+        return this.isPrivate;
     }
 
 }

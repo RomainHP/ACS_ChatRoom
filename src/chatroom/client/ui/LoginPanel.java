@@ -13,6 +13,9 @@ import chatroom.client.Client;
 import chatroom.exception.*;
 import chatroom.server.Login;
 
+/**
+ * Login interface
+ */
 public class LoginPanel extends JPanel {
 
     /**
@@ -118,7 +121,7 @@ public class LoginPanel extends JPanel {
                 // password
                 String password = "";
                 // number max of users
-                int max_users=0;
+                int max_users=10;
                 // tab choose a chatroom
                 if (tabPane.getSelectedIndex() == 0) {
                     if (chatroomsList.isSelectionEmpty()) {

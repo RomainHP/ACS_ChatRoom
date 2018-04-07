@@ -19,6 +19,12 @@ public class ImageMessage extends Message {
         this.image = file;
     }
 
+    public ImageMessage(File file, String nick, boolean priv) throws IOException {
+        super(file.toString(), nick, priv);
+        //convert file to image
+        this.image = file;
+    }
+
     public BufferedImage getImage() throws IOException {
         return ImageIO.read(image);
     }

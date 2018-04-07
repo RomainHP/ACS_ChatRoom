@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Panel containing a textfield with 2 buttons to do ++ or --
+ */
 public class IncrementPanel extends JPanel {
 
     private JTextField text;
@@ -29,7 +32,9 @@ public class IncrementPanel extends JPanel {
                         text.setText(val+1+"");
                         break;
                     case "-":
-                        text.setText(val-1+"");
+                        if (val>1){
+                            text.setText(val-1+"");
+                        }
                         break;
                     default:
                         break;

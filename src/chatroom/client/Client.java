@@ -14,10 +14,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import chatroom.exception.MaxConnectionException;
-import chatroom.exception.NicknameNotAvailableException;
-import chatroom.exception.NotEnoughArgumentsException;
-import chatroom.exception.WrongPasswordException;
+import chatroom.exception.*;
 import chatroom.server.Login;
 import chatroom.server.Session;
 import java.awt.EventQueue;
@@ -198,6 +195,46 @@ public class Client {
         Pattern p = Pattern.compile("[^a-zA-Z0-9]", Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(name);
         return (!m.find() && name.length() > 0 && name.length() < 16);
+    }
+
+    /**
+     * Send an image message to one person present in the chatroom
+     * @param aMsg message to send
+     * @param nickTo nickname of the user who receive the message
+     * @throws IOException
+     */
+    public void sendImageMessage(File aMsg, String nickTo) throws IOException, NotFoundUserException {
+        if (this.session != null) {
+            Message msg = new ImageMessage(aMsg, this.nickname, true);
+            this.session.sendMessage(msg, nickTo);
+        }
+    }
+
+    /**
+     * Send a sound message to one person present in the chatroom
+     * @param aMsg message to send
+     * @param nickTo nickname of the user who receive the message
+     * @throws IOException
+     * @throws UnsupportedAudioFileException
+     */
+    public void sendSoundMessage(File aMsg, String nickTo) throws IOException, UnsupportedAudioFileException, NotFoundUserException {
+        if (this.session != null) {
+            Message msg = new SoundMessage(aMsg, this.nickname, true);
+            this.session.sendMessage(msg, nickTo);
+        }
+    }
+
+    /**
+     * Send a message to one person present in the chatroom
+     * @param aMsg message to send
+     * @param nickTo nickname of the user who receive the message
+     * @throws IOException
+     */
+    public void sendMessage(String aMsg, String nickTo) throws IOException, NotFoundUserException {
+        if (this.session != null) {
+            Message msg = new Message(aMsg, this.nickname, true);
+            this.session.sendMessage(msg, nickTo);
+        }
     }
 
     public static void main(String[] args) {

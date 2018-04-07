@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import chatroom.client.Listener;
 import chatroom.client.message.Message;
+import chatroom.exception.NotFoundUserException;
 
 public class SessionImpl extends UnicastRemoteObject implements Session {
 
@@ -15,10 +16,31 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
      *
      */
     private static final long serialVersionUID = -9184666239790872778L;
+
+    /**
+     * user nickname in chatroom
+     */
     private final String nickname;
+
+    /**
+     * the chatroom
+     */
     private final ChatRoom chatroom;
+
+    /**
+     * listener which allow the chatroom to talk to the user
+     */
     private final Listener listener;
 
+    /**
+     * Constructor of SessionImpl class
+     * @param aChatroom chatroom linked
+     * @param aListener name of rmi url of client listener
+     * @param aNickname client nickname in the chatroom
+     * @throws RemoteException
+     * @throws MalformedURLException
+     * @throws NotBoundException
+     */
     public SessionImpl(ChatRoom aChatroom, String aListener, String aNickname)
             throws RemoteException, MalformedURLException, NotBoundException {
         this.chatroom = aChatroom;
@@ -35,6 +57,11 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
     @Override
     public void sendMessage(Message aMsg) throws RemoteException, IOException {
         this.chatroom.sendMessage(aMsg);
+    }
+
+    @Override
+    public void sendMessage(Message msg, String nickTo) throws RemoteException, IOException, NotFoundUserException {
+        this.chatroom.sendMessage(msg, this.nickname, nickTo);
     }
 
     @Override
