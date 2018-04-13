@@ -1,29 +1,27 @@
 package chatroom.client;
 
-import chatroom.client.ui.ConsoleDisplay;
-import chatroom.client.ui.Display;
+import chatroom.client.message.ImageMessage;
+import chatroom.client.message.Message;
+import chatroom.client.message.SoundMessage;
 import chatroom.client.ui.ExceptionPopup;
 import chatroom.client.ui.MainFrame;
+import chatroom.client.ui.display.ConsoleDisplay;
+import chatroom.client.ui.display.Display;
+import chatroom.exception.*;
+import chatroom.server.Login;
+import chatroom.server.Session;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import chatroom.exception.MaxConnectionException;
-import chatroom.exception.NicknameNotAvailableException;
-import chatroom.exception.NotEnoughArgumentsException;
-import chatroom.exception.WrongPasswordException;
-import chatroom.server.Login;
-import chatroom.server.Session;
-import java.awt.EventQueue;
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
 
 public class Client {
 
@@ -33,13 +31,13 @@ public class Client {
 
     private Session session;
 
-    //private final Listener listener;
+    private final Listener listener;
 
     private final Login login;
 
     private String nickname;
 
-    public static String server_name;
+    private static String server_name;
 
     public static String name_rebind = "listener_";
 
@@ -63,13 +61,7 @@ public class Client {
         return nick;
     }
 
-    public void setOutput(Session ses, Display out) throws RemoteException {
-        if(this.link.containsKey(ses)){
-            this.link.get(ses).setOutput(out);
-        }
-    }
-
-    public Listener listen(String name) {
+    public void listen(String name) {
         /*Thread t = new Thread() {
 			public void run() {
 				System.out.println("Enregistrement de l'objet.");
@@ -85,42 +77,57 @@ public class Client {
 		t.start();*/
         System.out.println("Enregistrement de l'objet.");
         try {
-            Listener sessionListener = new ListenerImpl(new ConsoleDisplay());
-            Naming.rebind(name, (Remote) sessionListener);
+            Naming.rebind(name, Client.this.listener);
             System.out.println("listener operationnel.");
-            return sessionListener;
         } catch (RemoteException | MalformedURLException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     /**
      * Connect the client to a chatroom
      *
      * @param pseudo client nickname
-     * @param chat chatroom he wants to connect to
+     * @param chat   chatroom he wants to connect to
      * @throws MaxConnectionException
      * @throws WrongPasswordException
      * @throws NicknameNotAvailableException
      * @throws NotBoundException
      * @throws IOException
      */
-    public Session connect(String pseudo, String chat) throws MaxConnectionException,
+    public void connect(String pseudo, String chat) throws MaxConnectionException,
             WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
         String name = Client.name_rebind + chat + "_" + pseudo;
-        Listener sessionListener = this.listen(name);
+        this.listen(name);
         String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat);
         this.session = (Session) Naming.lookup(url);
-        this.link.put(this.session, sessionListener);
-        return this.session;
     }
 
     /**
      * Connect the client to a chatroom
      *
-     * @param pseudo client nickname
-     * @param chat chatroom he wants to connect to
+     * @param pseudo      client nickname
+     * @param chat        chatroom he wants to connect to
+     * @param nb_MaxUsers number max of users
+     * @throws MaxConnectionException
+     * @throws WrongPasswordException
+     * @throws NicknameNotAvailableException
+     * @throws NotBoundException
+     * @throws IOException
+     */
+    public void connect(String pseudo, String chat, int nb_MaxUsers) throws MaxConnectionException,
+            WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
+        String name = Client.name_rebind + chat + "_" + pseudo;
+        this.listen(name);
+        String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat, nb_MaxUsers);
+        this.session = (Session) Naming.lookup(url);
+    }
+
+    /**
+     * Connect the client to a chatroom
+     *
+     * @param pseudo   client nickname
+     * @param chat     chatroom he wants to connect to
      * @param password chatroom password
      * @throws MaxConnectionException
      * @throws WrongPasswordException
@@ -128,14 +135,12 @@ public class Client {
      * @throws NotBoundException
      * @throws IOException
      */
-    public Session connect(String pseudo, String chat, String password) throws MaxConnectionException,
+    public void connect(String pseudo, String chat, String password) throws MaxConnectionException,
             WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
         String name = Client.name_rebind + chat + "_" + pseudo;
-        Listener sessionListener = this.listen(name);
+        this.listen(name);
         String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat, password);
         this.session = (Session) Naming.lookup(url);
-        this.link.put(this.session, sessionListener);
-        return this.session;
     }
 
     public void disconnect(Session aSession) throws IOException {
@@ -162,6 +167,10 @@ public class Client {
         }
     }
 
+    public void sendImageMessage(File aMsg) throws RemoteException, IOException {
+        if (this.session != null) {
+            Message msg = new ImageMessage(aMsg, this.nickname);
+            this.session.sendMessage(msg);
     public void sendMessage(Session aSession, File aMsg) throws RemoteException, IOException {
         if (this.link.containsKey(aSession)) {
             for(Session ses : this.link.keySet()){
@@ -174,6 +183,16 @@ public class Client {
     }
 
     public Session getSession(){
+    public void sendSoundMessage(File aMsg) throws RemoteException, UnsupportedAudioFileException, IOException {
+        if (this.session != null) {
+            System.out.println("Client : " + aMsg);
+            Message msg = new SoundMessage(aMsg, this.nickname);
+            System.out.println("Client : " + ((SoundMessage) msg).getSound());
+            this.session.sendMessage(msg);
+        }
+    }
+
+    public Session getSession() {
         return this.session;
     }
     
@@ -187,6 +206,49 @@ public class Client {
         Pattern p = Pattern.compile("[^a-zA-Z0-9]", Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(name);
         return (!m.find() && name.length() > 0 && name.length() < 16);
+    }
+
+    /**
+     * Send an image message to one person present in the chatroom
+     *
+     * @param aMsg   message to send
+     * @param nickTo nickname of the user who receive the message
+     * @throws IOException
+     */
+    public void sendImageMessage(File aMsg, String nickTo) throws IOException, NotFoundUserException {
+        if (this.session != null) {
+            Message msg = new ImageMessage(aMsg, this.nickname, true);
+            this.session.sendMessage(msg, nickTo);
+        }
+    }
+
+    /**
+     * Send a sound message to one person present in the chatroom
+     *
+     * @param aMsg   message to send
+     * @param nickTo nickname of the user who receive the message
+     * @throws IOException
+     * @throws UnsupportedAudioFileException
+     */
+    public void sendSoundMessage(File aMsg, String nickTo) throws IOException, UnsupportedAudioFileException, NotFoundUserException {
+        if (this.session != null) {
+            Message msg = new SoundMessage(aMsg, this.nickname, true);
+            this.session.sendMessage(msg, nickTo);
+        }
+    }
+
+    /**
+     * Send a message to one person present in the chatroom
+     *
+     * @param aMsg   message to send
+     * @param nickTo nickname of the user who receive the message
+     * @throws IOException
+     */
+    public void sendMessage(String aMsg, String nickTo) throws IOException, NotFoundUserException {
+        if (this.session != null) {
+            Message msg = new Message(aMsg, this.nickname, true);
+            this.session.sendMessage(msg, nickTo);
+        }
     }
 
     public static void main(String[] args) {

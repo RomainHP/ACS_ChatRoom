@@ -1,13 +1,15 @@
 package chatroom.server;
 
+import chatroom.client.Listener;
+import chatroom.client.message.Message;
+import chatroom.exception.NotFoundUserException;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import chatroom.client.Listener;
-import chatroom.client.Message;
 
 public class SessionImpl extends UnicastRemoteObject implements Session {
 
@@ -15,10 +17,32 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
      *
      */
     private static final long serialVersionUID = -9184666239790872778L;
+
+    /**
+     * user nickname in chatroom
+     */
     private final String nickname;
+
+    /**
+     * the chatroom
+     */
     private final ChatRoom chatroom;
+
+    /**
+     * listener which allow the chatroom to talk to the user
+     */
     private final Listener listener;
 
+    /**
+     * Constructor of SessionImpl class
+     *
+     * @param aChatroom chatroom linked
+     * @param aListener name of rmi url of client listener
+     * @param aNickname client nickname in the chatroom
+     * @throws RemoteException
+     * @throws MalformedURLException
+     * @throws NotBoundException
+     */
     public SessionImpl(ChatRoom aChatroom, String aListener, String aNickname)
             throws RemoteException, MalformedURLException, NotBoundException {
         this.chatroom = aChatroom;
@@ -38,16 +62,17 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
     }
 
     @Override
+    public void sendMessage(Message msg, String nickTo) throws RemoteException, IOException, NotFoundUserException {
+        this.chatroom.sendMessage(msg, this.nickname, nickTo);
+    }
+
+    @Override
     public void receiveMessage(Message aMsg) throws IOException, RemoteException {
         this.listener.receiveMessage(aMsg);
     }
 
     @Override
     public String[] getAllUsers() throws RemoteException {
-        String[] res = new String[this.chatroom.getAllUsers().size()];
-        for (int i = 0; i < this.chatroom.getAllUsers().size(); i++) {
-            res[i] = this.chatroom.getAllUsers().get(i);
-        }
-        return res;
+        return this.chatroom.getAllUsers();
     }
 }

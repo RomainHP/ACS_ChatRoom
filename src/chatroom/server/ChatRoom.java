@@ -1,20 +1,19 @@
 package chatroom.server;
 
-import chatroom.client.Message;
+import chatroom.client.message.Message;
+import chatroom.client.message.SystemMessage;
+import chatroom.exception.MaxConnectionException;
+import chatroom.exception.NicknameNotAvailableException;
+import chatroom.exception.NotFoundUserException;
+import chatroom.exception.WrongPasswordException;
+
+import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-
-import chatroom.exception.MaxConnectionException;
-import chatroom.exception.NicknameNotAvailableException;
-import chatroom.exception.WrongPasswordException;
-import java.io.IOException;
 
 public class ChatRoom {
 
@@ -47,9 +46,10 @@ public class ChatRoom {
     /**
      * Disconnect the client to the chatroom
      * if the chatroom is now empty, we remove it from Login
+     *
      * @param aNickname client disconnected
      * @throws RemoteException
-     * @throws IOException 
+     * @throws IOException
      */
     public void disconnect(String aNickname) throws RemoteException, IOException {
         //unexport the session of the client
@@ -60,26 +60,50 @@ public class ChatRoom {
             this.log.removeChatroom(this);
         } else {
             //Bye message
-            this.sendMessage(new Message("Bye " + aNickname + " !"));
+            this.sendMessage(new SystemMessage("Bye " + aNickname + " !"));
         }
     }
 
     /**
      * Send a message to all clients in chatroom
+     *
      * @param aMsg message sent
      * @throws RemoteException
-     * @throws IOException 
+     * @throws IOException
      */
     public void sendMessage(Message aMsg) throws RemoteException, IOException {
         // Broadcast to all clients
-        Iterator<Session> it = clients.values().iterator();
-        while (it.hasNext()) {
-            it.next().receiveMessage(aMsg);
+        for (Session session : clients.values()) {
+            session.receiveMessage(aMsg);
+        }
+    }
+
+    /**
+     * Send a message between 2 clients of the chatroom
+     *
+     * @param aMsg     message sent
+     * @param nickFrom
+     * @param nickTo
+     * @throws RemoteException
+     * @throws IOException
+     */
+    public void sendMessage(Message aMsg, String nickFrom, String nickTo) throws RemoteException, IOException, NotFoundUserException {
+        // Broadcast to the two nickname
+        if (this.clients.containsKey(nickFrom) && this.clients.containsKey(nickTo)) {
+            if (!nickFrom.equals(nickTo)) {
+                Session session1 = this.clients.get(nickFrom);
+                session1.receiveMessage(aMsg);
+            }
+            Session session2 = this.clients.get(nickTo);
+            session2.receiveMessage(aMsg);
+        } else {
+            throw new NotFoundUserException();
         }
     }
 
     /**
      * Connect a client to the chatroom
+     *
      * @param aListener client listener
      * @param aNickname client nickname
      * @return the name of client session (name of the rmi service)
@@ -87,7 +111,7 @@ public class ChatRoom {
      * @throws WrongPasswordException
      * @throws NicknameNotAvailableException
      * @throws NotBoundException
-     * @throws IOException 
+     * @throws IOException
      */
     synchronized public String connect(String aListener, String aNickname)
             throws MaxConnectionException, WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
@@ -102,7 +126,7 @@ public class ChatRoom {
             this.clients.put(aNickname, session);
             //Welcome message
             if (this.clients.size() > 1) {
-                this.sendMessage(new Message("Please welcome to " + aNickname));
+                this.sendMessage(new SystemMessage("Please welcome to " + aNickname));
             }
             return clientname;
         } else {
@@ -112,6 +136,7 @@ public class ChatRoom {
 
     /**
      * Connect a client to the chatroom
+     *
      * @param aListener client listener
      * @param aNickname client nickname
      * @param aPassword not used here
@@ -120,7 +145,7 @@ public class ChatRoom {
      * @throws WrongPasswordException
      * @throws NicknameNotAvailableException
      * @throws NotBoundException
-     * @throws IOException 
+     * @throws IOException
      */
     synchronized public String connect(String aListener, String aNickname, String aPassword)
             throws MaxConnectionException, WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
@@ -129,6 +154,7 @@ public class ChatRoom {
 
     /**
      * Return true if the nickname is correct (not special characters, size between 1 and 15)
+     *
      * @param aNickname nickname verified
      * @return true if the nickname is correct
      */
@@ -138,14 +164,10 @@ public class ChatRoom {
 
     /**
      * return true if the chatroom is private
+     *
      * @return true if the chatroom is private
      */
-    public List<String> getAllUsers() {
-        List<String> res = new ArrayList<>();
-        Iterator<String> it = this.clients.keySet().iterator();
-        while (it.hasNext()) {
-            res.add(it.next());
-        }
-        return res;
+    public String[] getAllUsers() {
+        return this.clients.keySet().toArray(new String[0]);
     }
 }

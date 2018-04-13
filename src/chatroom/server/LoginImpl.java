@@ -1,5 +1,9 @@
 package chatroom.server;
 
+import chatroom.exception.MaxConnectionException;
+import chatroom.exception.NicknameNotAvailableException;
+import chatroom.exception.WrongPasswordException;
+
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -7,10 +11,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import chatroom.exception.MaxConnectionException;
-import chatroom.exception.NicknameNotAvailableException;
-import chatroom.exception.WrongPasswordException;
 
 public class LoginImpl extends UnicastRemoteObject implements Login {
 
@@ -40,6 +40,16 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
     }
 
     @Override
+    public String connect(String aNickname, String aListener, String aChatroom, int nb_MaxUsers)
+            throws IOException, MaxConnectionException, NicknameNotAvailableException, NotBoundException, WrongPasswordException {
+        if (!this.chatrooms.containsKey(aChatroom)) {
+            this.chatrooms.put(aChatroom, new ChatRoom(aChatroom, this, nb_MaxUsers));
+        }
+        ChatRoom chat = this.chatrooms.get(aChatroom);
+        return chat.connect(aListener, aNickname);
+    }
+
+    @Override
     public String connect(String aNickname, String aListener, String aChatroom, String aPassword)
             throws MaxConnectionException, WrongPasswordException, NicknameNotAvailableException,
             NotBoundException, IOException {
@@ -47,7 +57,16 @@ public class LoginImpl extends UnicastRemoteObject implements Login {
             this.chatrooms.put(aChatroom, new PrivateChatRoom(aChatroom, this, aPassword));
         }
         PrivateChatRoom chat = (PrivateChatRoom) this.chatrooms.get(aChatroom);
+        return chat.connect(aListener, aNickname, aPassword);
+    }
 
+    @Override
+    public String connect(String aNickname, String aListener, String aChatroom, String aPassword, int nb_MaxUsers)
+            throws IOException, MaxConnectionException, WrongPasswordException, NicknameNotAvailableException, NotBoundException {
+        if (!this.chatrooms.containsKey(aChatroom)) {
+            this.chatrooms.put(aChatroom, new PrivateChatRoom(aChatroom, this, nb_MaxUsers, aPassword));
+        }
+        PrivateChatRoom chat = (PrivateChatRoom) this.chatrooms.get(aChatroom);
         return chat.connect(aListener, aNickname, aPassword);
     }
 

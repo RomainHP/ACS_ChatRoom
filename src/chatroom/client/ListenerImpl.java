@@ -1,10 +1,10 @@
 package chatroom.client;
 
-import java.io.IOException;
+import chatroom.client.message.Message;
+import chatroom.client.ui.display.Display;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-
-import chatroom.client.ui.Display;
 
 public class ListenerImpl extends UnicastRemoteObject implements Listener {
 
@@ -25,7 +25,7 @@ public class ListenerImpl extends UnicastRemoteObject implements Listener {
     }
 
     @Override
-    public void receiveMessage(Message aMsg) throws RemoteException, IOException {
+    public void receiveMessage(Message aMsg) throws RemoteException{
         // display on client interface
         out.write(aMsg);
     }

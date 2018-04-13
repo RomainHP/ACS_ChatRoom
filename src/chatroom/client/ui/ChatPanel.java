@@ -1,25 +1,24 @@
 package chatroom.client.ui;
 
 import chatroom.client.Client;
-import chatroom.server.Session;
-
-import java.awt.BorderLayout;
-import java.rmi.RemoteException;
+import chatroom.client.ui.display.MessagePanelDisplay;
+import chatroom.exception.NotFoundUserException;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.Arrays;
 
+/**
+ * Chat interface (display a chatroom)
+ */
 public class ChatPanel extends JPanel {
 
     /**
@@ -27,21 +26,13 @@ public class ChatPanel extends JPanel {
      */
     private static final long serialVersionUID = -301099811934446277L;
 
-    private final MessagePanelDisplay chatTextArea;
-
-    private final String name;
-
     private final Client client;
-    
-    private final Session session;
 
     private final JList<String> usersList;
 
-    public ChatPanel(String name, Client client, Session session) throws RemoteException {
+    public ChatPanel(String name, Client client) throws RemoteException {
         this.setLayout(new BorderLayout());
 
-        this.session = session;
-        this.name = name;
         this.client = client;
 
         JLabel lblChatroom = new JLabel("ChatRoom " + name);
@@ -74,6 +65,9 @@ public class ChatPanel extends JPanel {
         JButton btnImg = new JButton("Img");
         horizontalBox.add(btnImg);
 
+        JButton btnSound = new JButton("Sound");
+        horizontalBox.add(btnSound);
+
         Box verticalBox = Box.createVerticalBox();
         this.add(verticalBox, BorderLayout.EAST);
 
@@ -81,6 +75,24 @@ public class ChatPanel extends JPanel {
         verticalBox.add(lblUsers);
         
         this.usersList = new JList<>(this.session.getAllUsers());
+
+        usersList = new JList<>(client.getSession().getAllUsers());
+        usersList.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                    usersList.clearSelection();
+                }
+            }
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {}
+            @Override
+            public void mouseReleased(MouseEvent mouseEvent) {}
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {}
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {}
+        });
 
         JScrollPane scrollPane = new JScrollPane(usersList);
         verticalBox.add(scrollPane);
@@ -97,14 +109,10 @@ public class ChatPanel extends JPanel {
                     }
                 }
             }
-
             @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
+            public void keyTyped(KeyEvent e) {}
             @Override
-            public void keyReleased(KeyEvent e) {
-            }
+            public void keyReleased(KeyEvent e) {}
 
         });
         // send a message with the button
@@ -117,13 +125,15 @@ public class ChatPanel extends JPanel {
             }
         });
 
+        //Send an image
         btnImg.addActionListener((ActionEvent e) -> {
             JFileChooser c = new JFileChooser();
             //Setting Up The Filter
             FileNameExtensionFilter imageFilter = new FileNameExtensionFilter(
                     "Image files", ImageIO.getReaderFileSuffixes());
             //Attaching Filter to JFileChooser object
-            c.setFileFilter((javax.swing.filechooser.FileFilter) imageFilter);
+            c.setFileFilter(imageFilter);
+            c.setAcceptAllFileFilterUsed(false);
             //Displaying Filechooser
             int rVal = c.showOpenDialog(new JPanel());
             if (rVal == JFileChooser.APPROVE_OPTION) {
@@ -131,6 +141,31 @@ public class ChatPanel extends JPanel {
                 try {
                     client.sendMessage(session, selectedFile);
                 } catch (IOException e1) {
+                    ExceptionPopup.showError(e1);
+                }
+            }
+        });
+
+        //Send an image
+        btnSound.addActionListener((ActionEvent e) -> {
+            JFileChooser c = new JFileChooser();
+            //Setting Up The Filter
+            FileNameExtensionFilter soundFilter = new FileNameExtensionFilter(
+                    "Wav files", "wav");
+            //Attaching Filter to JFileChooser object
+            c.setFileFilter(soundFilter);
+            c.setAcceptAllFileFilterUsed(false);
+            //Displaying Filechooser
+            int rVal = c.showOpenDialog(new JPanel());
+            if (rVal == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = c.getSelectedFile();
+                try {
+                    if (usersList.isSelectionEmpty()) {
+                        client.sendSoundMessage(selectedFile);
+                    } else {
+                        client.sendSoundMessage(selectedFile, usersList.getSelectedValue());
+                    }
+                } catch (IOException | UnsupportedAudioFileException | NotFoundUserException e1) {
                     ExceptionPopup.showError(e1);
                 }
             }

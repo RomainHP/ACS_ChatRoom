@@ -1,17 +1,10 @@
 package chatroom.client.ui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 public class ImagePanel extends JPanel {
 
@@ -22,12 +15,8 @@ public class ImagePanel extends JPanel {
 
     private BufferedImage image;
 
-    public ImagePanel(File file, Color color) {
-        try {
-            image = ImageIO.read(file);
-        } catch (IOException e) {
-            ExceptionPopup.showError(e);
-        }
+    public ImagePanel(BufferedImage image, Color color) {
+        this.image = image;
         this.setPreferredSize(new Dimension(100, 100));
         this.setMaximumSize(new Dimension(100, 100));
         this.setBackground(color);
@@ -48,7 +37,7 @@ public class ImagePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        float ratio = (float) 0.0;
+        float ratio;
         if (image.getHeight() < image.getWidth()) {
             ratio = ((float) image.getWidth()) / ((float) image.getHeight());
         } else {
