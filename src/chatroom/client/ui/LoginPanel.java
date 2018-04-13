@@ -131,16 +131,16 @@ public class LoginPanel extends JPanel {
                         throw new UncorrectNameException("chat");
                     }
                 }
-                client.setNickname(pseudo);
+                //client.setNickname(pseudo);
                 // no password
                 if (password.trim().length() == 0) {
-                    client.connect(pseudo, chat);
+                    client.setNickname(client.connect(pseudo, chat) , pseudo);
                     // password
                 } else {
                     if (!Client.verifyName(password)) {
                         throw new UncorrectNameException("password");
                     }
-                    client.connect(pseudo, chat, password);
+                    client.setNickname(client.connect(pseudo, chat, password), pseudo);
                 }
                 frame.changeView(LoginPanel.this, chat, client.getSession());
             } catch (MaxConnectionException | WrongPasswordException | NicknameNotAvailableException | NotBoundException | UncorrectNameException | IOException e) {

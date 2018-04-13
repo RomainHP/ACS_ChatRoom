@@ -49,16 +49,17 @@ public class ChatPanel extends JPanel {
         this.add(lblChatroom, BorderLayout.NORTH);
 
         chatTextArea = new MessagePanelDisplay(this);
-<<<<<<<
+
         JScrollPane scroll = new JScrollPane(chatTextArea);
         chatTextArea.setScrollPane(scroll);
         this.add(scroll, BorderLayout.CENTER);
-        client.setOutput(this.chatTextArea);
-=======
+        client.setOutput(this.session,this.chatTextArea);
+
+
         this.add(new JScrollPane(chatTextArea), BorderLayout.CENTER);
         Session clientSession = client.getSession();
         client.setOutput(clientSession, this.chatTextArea);
->>>>>>>
+
 
         Box horizontalBox = Box.createHorizontalBox();
         this.add(horizontalBox, BorderLayout.SOUTH);
@@ -78,8 +79,8 @@ public class ChatPanel extends JPanel {
 
         JLabel lblUsers = new JLabel("Users :");
         verticalBox.add(lblUsers);
-
-        usersList = new JList<>(client.getSession().getAllUsers());
+        
+        this.usersList = new JList<>(this.session.getAllUsers());
 
         JScrollPane scrollPane = new JScrollPane(usersList);
         verticalBox.add(scrollPane);
@@ -89,7 +90,7 @@ public class ChatPanel extends JPanel {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     try {
-                        client.sendMessage(msgTextField.getText());
+                        client.sendMessage(session, msgTextField.getText());
                         msgTextField.setText("");
                     } catch (Exception ex) {
                         ExceptionPopup.showError(ex);
@@ -109,7 +110,7 @@ public class ChatPanel extends JPanel {
         // send a message with the button
         btnSend.addActionListener((ActionEvent e) -> {
             try {
-                client.sendMessage(msgTextField.getText());
+                client.sendMessage(session, msgTextField.getText());
                 msgTextField.setText(""); // clean the text field
             } catch (Exception ex) {
                 ExceptionPopup.showError(ex);
@@ -128,7 +129,7 @@ public class ChatPanel extends JPanel {
             if (rVal == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = c.getSelectedFile();
                 try {
-                    client.sendMessage(selectedFile);
+                    client.sendMessage(session, selectedFile);
                 } catch (IOException e1) {
                     ExceptionPopup.showError(e1);
                 }
@@ -139,8 +140,12 @@ public class ChatPanel extends JPanel {
     public Client getClient() {
         return this.client;
     }
-
+    
+    public Session getSession(){
+        return this.session;
+    }
+    
     public void actualizeUsers() throws RemoteException {
-        this.usersList.setListData(this.client.getSession().getAllUsers());
+        this.usersList.setListData(this.session.getAllUsers());
     }
 }

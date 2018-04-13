@@ -69,12 +69,14 @@ public class MainFrame extends JFrame {
                             try {
                                 ((ChatPanel) compo).getClient().disconnect(client.getSession());
                             } catch (IOException e) {
+                                System.out.println(client.getSession());
                                 ExceptionPopup.showError(e);
                             }
                         } else if (compo instanceof LoginPanel) {
                             try {
                                 ((LoginPanel) compo).getClient().disconnect(client.getSession());
                             } catch (IOException e) {
+                                System.out.println(client.getSession());
                                 ExceptionPopup.showError(e);
                             }
                         }
@@ -85,6 +87,7 @@ public class MainFrame extends JFrame {
                             client.disconnect(client.getSession());
                             System.exit(0);
                         } catch (IOException e) {
+                            System.out.println(client.getSession());
                             ExceptionPopup.showError(e);
                         }
                     }

@@ -28,6 +28,8 @@ import java.util.HashMap;
 public class Client {
 
     private HashMap<Session, Listener> link;
+    
+    private HashMap<Session, String> nickname_List;
 
     private Session session;
 
@@ -44,14 +46,21 @@ public class Client {
     public Client(Login log) throws RemoteException {
         this.login = log;
         this.link = new HashMap();
+        this.nickname_List = new HashMap();
     }
 
-    public void setNickname(String nick) {
-        this.nickname = nick;
+    public void setNickname(Session ses, String nick) {
+        //this.nickname = nick;
+        this.nickname_List.put(ses, nick);
+        
     }
 
-    public String getNickname() {
-        return this.nickname;
+    public String getNickname(Session ses) {
+        String nick = null;
+        if(this.nickname_List.containsKey(ses)){
+            nick = this.nickname_List.get(ses);
+        }
+        return nick;
     }
 
     public void setOutput(Session ses, Display out) throws RemoteException {
@@ -136,30 +145,38 @@ public class Client {
                     ses.disconnect();
                 }
             }
-            this.link.remove(aSession);
             //unexport the listener of the client
             UnicastRemoteObject.unexportObject(this.link.get(aSession), true);
+            this.link.remove(aSession);
         }
     }
 
-    public void sendMessage(String aMsg) throws RemoteException, IOException {
-        if (this.session != null) {
-            Message msg = new Message(aMsg, this.nickname);
-            this.session.sendMessage(msg);
+    public void sendMessage(Session aSession, String aMsg) throws RemoteException, IOException {
+        if (this.link.containsKey(aSession)) {
+            for(Session ses : this.link.keySet()){
+                if(ses.equals(aSession)){
+                    Message msg = new Message(aMsg, this.nickname_List.get(ses));
+                    ses.sendMessage(msg);
+                }
+            }
         }
     }
 
-    public void sendMessage(File aMsg) throws RemoteException, IOException {
-        if (this.session != null) {
-            Message msg = new Message(aMsg, this.nickname);
-            this.session.sendMessage(msg);
+    public void sendMessage(Session aSession, File aMsg) throws RemoteException, IOException {
+        if (this.link.containsKey(aSession)) {
+            for(Session ses : this.link.keySet()){
+                if(ses.equals(aSession)){
+                    Message msg = new Message(aMsg, this.nickname_List.get(ses));
+                    ses.sendMessage(msg);
+                }
+            }
         }
     }
 
-    public Session getSession() {
+    public Session getSession(){
         return this.session;
     }
-
+    
     /**
      * Nickname only composed with letters and numbers (same for password)
      *
