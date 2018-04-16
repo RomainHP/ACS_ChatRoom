@@ -33,8 +33,6 @@ public class Client {
 
     private Session session;
 
-    //private final Listener listener;
-
     private final Login login;
 
     private String nickname;
@@ -47,22 +45,35 @@ public class Client {
         this.login = log;
         this.link = new HashMap();
         this.nickname_List = new HashMap();
-        //this.listener = null;
     }
 
+    /**
+     * Link to a session, the nickname of the user for this session
+     * @param ses The session that'll be linked
+     * @param nick The nickname to link
+     */
     public void setNickname(Session ses, String nick) {
-        //this.nickname = nick;
         this.nickname_List.put(ses, nick);
         
     }
     
+    /**
+     * Display to the client the chatroom of a given session
+     * @param ses The session of the chatroom that must be displayed/updated
+     * @param out The visual for the client
+     * @throws RemoteException 
+     */
     public void setOutput(Session ses, Display out) throws RemoteException {
         if(this.link.containsKey(ses)){
             this.link.get(ses).setOutput(out);
         }
     }
 
-
+    /**
+     * Return the nickname of the client in a given session
+     * @param ses The session (chatroom) you want to retrieve the nickname
+     * @return The nickname of the client
+     */
     public String getNickname(Session ses) {
         String nick = null;
         if(this.nickname_List.containsKey(ses)){
@@ -71,6 +82,11 @@ public class Client {
         return nick;
     }
 
+    /**
+     * Set the listener of a chatroom
+     * @param name The name that'll be given to the listener
+     * @return A listener on the session
+     */
     public Listener listen(String name) {
         System.out.println("Enregistrement de l'objet.");
         try {
@@ -89,7 +105,8 @@ public class Client {
      * Connect the client to a chatroom
      *
      * @param pseudo client nickname
-     * @param chat   chatroom he wants to connect to
+     * @param chat chatroom he wants to connect to
+     * @return The session when connected
      * @throws MaxConnectionException
      * @throws WrongPasswordException
      * @throws NicknameNotAvailableException
@@ -112,6 +129,7 @@ public class Client {
      * @param pseudo      client nickname
      * @param chat        chatroom he wants to connect to
      * @param nb_MaxUsers number max of users
+     * @return The session when connected
      * @throws MaxConnectionException
      * @throws WrongPasswordException
      * @throws NicknameNotAvailableException
@@ -134,6 +152,7 @@ public class Client {
      * @param pseudo   client nickname
      * @param chat     chatroom he wants to connect to
      * @param password chatroom password
+     * @return The session when connected
      * @throws MaxConnectionException
      * @throws WrongPasswordException
      * @throws NicknameNotAvailableException
@@ -155,7 +174,9 @@ public class Client {
      *
      * @param pseudo      client nickname
      * @param chat        chatroom he wants to connect to
+     * @param password The password to connect to a private chatroom
      * @param nb_MaxUsers number max of users
+     * @return The session when connected
      * @throws MaxConnectionException
      * @throws WrongPasswordException
      * @throws NicknameNotAvailableException
@@ -172,7 +193,11 @@ public class Client {
         return this.session;
     }
 
-    
+    /**
+     * Disconnect the user from a session
+     * @param aSession The session you need to disconnect from
+     * @throws IOException 
+     */
     public void disconnect(Session aSession) throws IOException {
         if (this.link.containsKey(aSession)) {
             for (Session ses : this.link.keySet()) {
@@ -186,6 +211,13 @@ public class Client {
         }
     }
 
+    /**
+     * Sens a text message in a chatroom
+     * @param aSession The session you want to send a message in
+     * @param aMsg The message to send
+     * @throws RemoteException
+     * @throws IOException 
+     */
     public void sendMessage(Session aSession, String aMsg) throws RemoteException, IOException {
         if (this.link.containsKey(aSession)) {
             for(Session ses : this.link.keySet()){
@@ -197,6 +229,13 @@ public class Client {
         }
     }
 
+    /**
+     * Sens an image message in a chatroom
+     * @param aSession The session you want to send a message in
+     * @param aMsg The image to send
+     * @throws RemoteException
+     * @throws IOException 
+     */
     public void sendImageMessage(Session aSession, File aMsg) throws RemoteException, IOException {
         if (this.link.containsKey(aSession)) {
             for(Session ses : this.link.keySet()){
@@ -208,6 +247,13 @@ public class Client {
         }
     }    
 
+    /**
+     * Sens a sound message in a chatroom
+     * @param aSession The session you want to send a message in
+     * @param aMsg The sound to send
+     * @throws RemoteException
+     * @throws IOException 
+     */
     public void sendSoundMessage(Session aSession, File aMsg) throws RemoteException, UnsupportedAudioFileException, IOException {
         if (this.link.containsKey(aSession)) {
             for(Session ses : this.link.keySet()){
@@ -219,6 +265,10 @@ public class Client {
         } 
     }
 
+    /**
+     * Return the current session
+     * @return the current session
+     */
     public Session getSession() {
         return this.session;
     }
@@ -238,16 +288,13 @@ public class Client {
     /**
      * Send an image message to one person present in the chatroom
      *
+     * @param aSession the session in which you need to look to find the user
      * @param aMsg   message to send
      * @param nickTo nickname of the user who receive the message
      * @throws IOException
+     * @throws chatroom.exception.NotFoundUserException
      */
     public void sendImageMessage(Session aSession, File aMsg, String nickTo) throws IOException, NotFoundUserException {
-        /*if (this.session != null) {
-            Message msg = new ImageMessage(aMsg, this.nickname, true);
-            this.session.sendMessage(msg, nickTo);
-        }*/
-        
         if (this.link.containsKey(aSession)) {
             for(Session ses : this.link.keySet()){
                 if(ses.equals(aSession)){
@@ -261,17 +308,14 @@ public class Client {
     /**
      * Send a sound message to one person present in the chatroom
      *
+     * @param aSession the session in which you need to look to find the user
      * @param aMsg   message to send
      * @param nickTo nickname of the user who receive the message
      * @throws IOException
      * @throws UnsupportedAudioFileException
+     * @throws chatroom.exception.NotFoundUserException
      */
     public void sendSoundMessage(Session aSession, File aMsg, String nickTo) throws IOException, UnsupportedAudioFileException, NotFoundUserException {
-        /*if (this.session != null) {
-            Message msg = new SoundMessage(aMsg, this.nickname, true);
-            this.session.sendMessage(msg, nickTo);
-        }*/
-        
         if (this.link.containsKey(aSession)) {
             for(Session ses : this.link.keySet()){
                 if(ses.equals(aSession)){
@@ -284,18 +328,13 @@ public class Client {
 
     /**
      * Send a message to one person present in the chatroom
-     *
+     * @param aSession the session in which you need to look to find the user
      * @param aMsg   message to send
      * @param nickTo nickname of the user who receive the message
      * @throws IOException
      * @throws chatroom.exception.NotFoundUserException
      */
     public void sendMessage(Session aSession, String aMsg, String nickTo) throws IOException, NotFoundUserException {
-        /*if (this.session != null) {
-            Message msg = new Message(aMsg, this.nickname, true);
-            this.session.sendMessage(msg, nickTo);
-        }*/
-        
         if (this.link.containsKey(aSession)) {
             for(Session ses : this.link.keySet()){
                 if(ses.equals(aSession)){

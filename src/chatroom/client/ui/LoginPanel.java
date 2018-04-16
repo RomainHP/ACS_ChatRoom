@@ -17,9 +17,6 @@ import java.rmi.RemoteException;
  */
 public class LoginPanel extends JPanel {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -301099811934446277L;
 
     private JList<String> chatroomsList;

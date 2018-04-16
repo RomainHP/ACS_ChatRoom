@@ -23,9 +23,6 @@ import java.rmi.RemoteException;
  */
 public class MessagePanelDisplay extends JPanel implements Display {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -1059871847589145969L;
 
     private boolean color = true;
@@ -125,6 +122,10 @@ public class MessagePanelDisplay extends JPanel implements Display {
         this.revalidate();
     }
 
+    /**
+     * Write in the panel the message sent
+     * @param aMsg the message to write
+     */
     @Override
     public void write(Message aMsg) {
         if (null != aMsg) {

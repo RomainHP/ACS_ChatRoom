@@ -16,9 +16,6 @@ import java.rmi.RemoteException;
 
 public class MainFrame extends JFrame {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -7487363104762069085L;
 
     private Client client;

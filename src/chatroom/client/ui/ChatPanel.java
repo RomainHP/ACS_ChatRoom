@@ -24,9 +24,6 @@ import java.util.logging.Logger;
  */
 public class ChatPanel extends JPanel {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -301099811934446277L;
 
     private final Client client;
@@ -198,6 +195,10 @@ public class ChatPanel extends JPanel {
         return this.session;
     }
     
+    /**
+     * Actualise the list of the user in a room
+     * @throws RemoteException 
+     */
     public void actualizeUsers() throws RemoteException {
         this.usersList.setListData(this.session.getAllUsers());
     }

@@ -39,6 +39,10 @@ public class ChatRoom {
         this.max_connection = aMax_connection;
     }
 
+    /**
+     * Return the name of the Chatroom
+     * @return the name of the chatroom
+     */
     public String getName() {
         return this.name;
     }
@@ -163,9 +167,8 @@ public class ChatRoom {
     }
 
     /**
-     * return true if the chatroom is private
-     *
-     * @return true if the chatroom is private
+     * Retrieve all the users of the chatroom
+     * @return An array containing all the nicknames
      */
     public String[] getAllUsers() {
         return this.clients.keySet().toArray(new String[0]);
