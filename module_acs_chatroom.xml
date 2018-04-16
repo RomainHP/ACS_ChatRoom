@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_acs_chatroom" default="compile.module.acs_chatroom">
+  <dirname property="module.acs_chatroom.basedir" file="${ant.file.module_acs_chatroom}"/>
+  
+  <property name="module.jdk.home.acs_chatroom" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.acs_chatroom" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.acs_chatroom" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.acs_chatroom" value="-encoding UTF-8 -source 9 -target 9 ${compiler.args}"/>
+  
+  <property name="acs_chatroom.output.dir" value="${module.acs_chatroom.basedir}/bin"/>
+  <property name="acs_chatroom.testoutput.dir" value="${module.acs_chatroom.basedir}/bin"/>
+  
+  <path id="acs_chatroom.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="acs_chatroom.module.production.classpath">
+    <path refid="${module.jdk.classpath.acs_chatroom}"/>
+  </path>
+  
+  <path id="acs_chatroom.runtime.production.module.classpath">
+    <pathelement location="${acs_chatroom.output.dir}"/>
+  </path>
+  
+  <path id="acs_chatroom.module.classpath">
+    <pathelement location="${acs_chatroom.output.dir}"/>
+    <path refid="${module.jdk.classpath.acs_chatroom}"/>
+  </path>
+  
+  <path id="acs_chatroom.runtime.module.classpath">
+    <pathelement location="${acs_chatroom.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.acs_chatroom">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.acs_chatroom">
+    <patternset refid="excluded.from.module.acs_chatroom"/>
+  </patternset>
+  
+  <path id="acs_chatroom.module.sourcepath">
+    <dirset dir="${module.acs_chatroom.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.acs_chatroom" depends="compile.module.acs_chatroom.production,compile.module.acs_chatroom.tests" description="Compile module ACS_ChatRoom"/>
+  
+  <target name="compile.module.acs_chatroom.production" depends="register.custom.compilers" description="Compile module ACS_ChatRoom; production classes">
+    <mkdir dir="${acs_chatroom.output.dir}"/>
+    <javac2 destdir="${acs_chatroom.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.acs_chatroom}/javac">
+      <compilerarg line="${compiler.args.acs_chatroom}"/>
+      <bootclasspath refid="acs_chatroom.module.bootclasspath"/>
+      <classpath refid="acs_chatroom.module.production.classpath"/>
+      <src refid="acs_chatroom.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.acs_chatroom"/>
+    </javac2>
+    
+    <copy todir="${acs_chatroom.output.dir}">
+      <fileset dir="${module.acs_chatroom.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.acs_chatroom.tests" depends="register.custom.compilers,compile.module.acs_chatroom.production" description="compile module ACS_ChatRoom; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.acs_chatroom" description="cleanup module">
+    <delete dir="${acs_chatroom.output.dir}"/>
+    <delete dir="${acs_chatroom.testoutput.dir}"/>
+  </target>
+</project>

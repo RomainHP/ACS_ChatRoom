@@ -4,7 +4,7 @@ import chatroom.client.message.ImageMessage;
 import chatroom.client.message.Message;
 import chatroom.client.message.SoundMessage;
 import chatroom.client.ui.ExceptionPopup;
-import chatroom.client.ui.MainFrame;
+import chatroom.client.ui.SelectServerFrame;
 import chatroom.client.ui.display.ConsoleDisplay;
 import chatroom.client.ui.display.Display;
 import chatroom.exception.*;
@@ -27,9 +27,9 @@ import java.util.regex.Pattern;
 
 public class Client {
 
-    private HashMap<Session, Listener> link;
+    private final HashMap<Session, Listener> link;
     
-    private HashMap<Session, String> nickname_List;
+    private final HashMap<Session, String> nickname_List;
 
     private Session session;
 
@@ -37,11 +37,11 @@ public class Client {
 
     private String nickname;
 
-    private static String server_name;
+    public static String server_name;
 
-    public static String name_rebind = "listener_";
+    private static final String name_rebind = "listener_";
 
-    public Client(Login log) throws RemoteException {
+    public Client(Login log) {
         this.login = log;
         this.link = new HashMap();
         this.nickname_List = new HashMap();
@@ -87,7 +87,7 @@ public class Client {
      * @param name The name that'll be given to the listener
      * @return A listener on the session
      */
-    public Listener listen(String name) {
+    private Listener listen(String name) {
         System.out.println("Enregistrement de l'objet.");
         try {
             Listener sessionListener = new ListenerImpl(new ConsoleDisplay());
@@ -346,25 +346,13 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        try {
-            if (args.length <= 0) {
-                throw new NotEnoughArgumentsException();
+        EventQueue.invokeLater(() -> {
+            try {
+                SelectServerFrame frame = new SelectServerFrame();
+                frame.setVisible(true);
+            } catch (Exception e) {
+                ExceptionPopup.showError(e);
             }
-            // Login
-            Client.server_name = args[0];
-            String url = "rmi://" + Client.server_name + "/login";
-            Login log = (Login) Naming.lookup(url);
-            Client client = new Client(log);
-            EventQueue.invokeLater(() -> {
-                try {
-                    MainFrame frame = new MainFrame(log, client);
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    ExceptionPopup.showError(e);
-                }
-            });
-        } catch (NotEnoughArgumentsException | NotBoundException | MalformedURLException | RemoteException e) {
-            ExceptionPopup.showError(e);
-        }
+        });
     }
 }

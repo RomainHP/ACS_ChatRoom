@@ -9,18 +9,18 @@ public class Message implements Serializable {
      */
     private static final long serialVersionUID = -3659547225566522546L;
 
-    private String message;
+    private final String message;
 
-    private String nick;
+    private final String nick;
 
-    protected boolean isPrivate = false;
+    private boolean isPrivate = false;
 
     public Message(String msg, String nick) {
         this.nick = nick;
         this.message = msg;
     }
 
-    public Message(String aMsg, String nickname, boolean priv) {
+    Message(String aMsg, String nickname, boolean priv) {
         this(aMsg, nickname);
         this.isPrivate = priv;
     }

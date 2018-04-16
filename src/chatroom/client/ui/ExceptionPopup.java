@@ -15,7 +15,7 @@ public class ExceptionPopup {
         showError(errorMessage, title);
     }
 
-    public static void showError(String errorMessage, String title) {
+    private static void showError(String errorMessage, String title) {
         JOptionPane.showMessageDialog(null, errorMessage, title, JOptionPane.ERROR_MESSAGE);
     }
 

@@ -15,17 +15,17 @@ import java.rmi.RemoteException;
 /**
  * Login interface
  */
-public class LoginPanel extends JPanel {
+class LoginPanel extends JPanel {
 
     private static final long serialVersionUID = -301099811934446277L;
 
     private JList<String> chatroomsList;
 
-    private JButton btnConfirm;
+    private final JButton btnConfirm;
 
-    private JButton actualizeButton;
+    private final JButton actualizeButton;
 
-    private Client client;
+    private final Client client;
 
     public LoginPanel(MainFrame frame, Login log, Client client) throws RemoteException {
         this.setLayout(new BorderLayout());

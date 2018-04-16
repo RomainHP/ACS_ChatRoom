@@ -13,7 +13,7 @@ public class ImagePanel extends JPanel {
      */
     private static final long serialVersionUID = 160997660247771260L;
 
-    private BufferedImage image;
+    private final BufferedImage image;
 
     public ImagePanel(BufferedImage image, Color color) {
         this.image = image;

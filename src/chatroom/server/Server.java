@@ -2,9 +2,9 @@ package chatroom.server;
 
 import java.rmi.Naming;
 
-public class Server {
+class Server {
 
-    public static final String rebind_name = "login";
+    private static final String rebind_name = "login";
 
     public static void main(String[] args) {
         Login log;

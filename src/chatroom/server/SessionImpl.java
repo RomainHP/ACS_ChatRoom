@@ -57,17 +57,17 @@ public class SessionImpl extends UnicastRemoteObject implements Session {
     }
 
     @Override
-    public void sendMessage(Message aMsg) throws RemoteException, IOException {
+    public void sendMessage(Message aMsg) throws IOException {
         this.chatroom.sendMessage(aMsg);
     }
 
     @Override
-    public void sendMessage(Message msg, String nickTo) throws RemoteException, IOException, NotFoundUserException {
+    public void sendMessage(Message msg, String nickTo) throws IOException, NotFoundUserException {
         this.chatroom.sendMessage(msg, this.nickname, nickTo);
     }
 
     @Override
-    public void receiveMessage(Message aMsg) throws IOException, RemoteException {
+    public void receiveMessage(Message aMsg) throws IOException {
         this.listener.receiveMessage(aMsg);
     }
 

@@ -9,13 +9,13 @@ import java.rmi.RemoteException;
 
 public interface Session extends Remote {
 
-    void disconnect() throws RemoteException, IOException;
+    void disconnect() throws IOException;
 
-    void sendMessage(Message aMsg) throws RemoteException, IOException;
+    void sendMessage(Message aMsg) throws IOException;
 
-    void sendMessage(Message msg, String nickTo) throws RemoteException, IOException, NotFoundUserException;
+    void sendMessage(Message msg, String nickTo) throws IOException, NotFoundUserException;
 
-    void receiveMessage(Message aMsg) throws IOException, RemoteException;
+    void receiveMessage(Message aMsg) throws IOException;
 
     String[] getAllUsers() throws RemoteException;
 }

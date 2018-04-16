@@ -2,7 +2,7 @@ package chatroom.client.ui;
 
 import javax.swing.*;
 
-public class PasswordPopup {
+class PasswordPopup {
 
     /**
      * Create a Popup to ask the chatroom password

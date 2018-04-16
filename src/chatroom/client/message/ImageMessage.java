@@ -10,7 +10,7 @@ import java.io.IOException;
  */
 public class ImageMessage extends Message {
 
-    private File image;
+    private final File image;
 
     public ImageMessage(File file, String nick) {
         super(file.toString(), nick);
@@ -18,7 +18,7 @@ public class ImageMessage extends Message {
         this.image = file;
     }
 
-    public ImageMessage(File file, String nick, boolean priv) throws IOException {
+    public ImageMessage(File file, String nick, boolean priv) {
         super(file.toString(), nick, priv);
         //convert file to image
         this.image = file;

@@ -57,19 +57,16 @@ Ces fonctionnalités sont du côté client. Le serveur peut uniquement être lan
 
 
 ##########################################################################################
-######								MAKEFILE										######
+######								COMPILATION										######
 ##########################################################################################
 
 Le paquet java est nécessaire pour la compilation du projet.
 
-Compilation du projet : commande "make"
+Compilation du projet : commande "ant" dans le répertoire courant du projet.
 
-A la fin de la compilation, 2 fichiers jar sont créés et peuvent être lancés par la commande "java -jar".
+La compilation crée les fichiers .class dans le dossier bin et génère la documentation dans le dossier dist.
 
-##########################################################################################
-######							EXEMPLES D'UTILISATION								######
-##########################################################################################
-
-Les commandes du terminal 1 doivent se faire en premier, suivi des commandes du terminal 2. Les commentaires sont marqués entre parenthèses. Avant de lancer l'exemple, il faut se placer dans le répertoire contenant du projet contenant le makefile.
-
-Le client doit préciser le hostname (nom du server) en argument de la commande pour le lancer.
+Il est possible de lancer le programme avec les commandes : (à lancer dans des terminaux différents et placés à la racine du projet)
+	rmiregistry
+	java chatroom.server.Server (Si le serveur n'a pas été ouvert ailleurs)
+	java chatroom.client.Client

@@ -6,7 +6,6 @@ import chatroom.exception.NotFoundUserException;
 import chatroom.server.Session;
 
 import javax.imageio.ImageIO;
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -15,9 +14,6 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Chat interface (display a chatroom)
@@ -28,9 +24,7 @@ public class ChatPanel extends JPanel {
 
     private final Client client;
     
-    private Session session;
-        
-    private MessagePanelDisplay chatTextArea;
+    private final Session session;
 
     private final JList<String> usersList;
 
@@ -44,17 +38,17 @@ public class ChatPanel extends JPanel {
         lblChatroom.setHorizontalAlignment(SwingConstants.CENTER);
         this.add(lblChatroom, BorderLayout.NORTH);
 
-         this.chatTextArea = new MessagePanelDisplay(this);
+        MessagePanelDisplay chatTextArea = new MessagePanelDisplay(this);
 
         JScrollPane scroll = new JScrollPane(chatTextArea);
         chatTextArea.setScrollPane(scroll);
         this.add(scroll, BorderLayout.CENTER);
-        client.setOutput(this.session,this.chatTextArea);
+        client.setOutput(this.session, chatTextArea);
 
 
         this.add(new JScrollPane(chatTextArea), BorderLayout.CENTER);
         Session clientSession = client.getSession();
-        client.setOutput(clientSession, this.chatTextArea);
+        client.setOutput(clientSession, chatTextArea);
 
 
         Box horizontalBox = Box.createHorizontalBox();
@@ -190,11 +184,7 @@ public class ChatPanel extends JPanel {
     public Client getClient() {
         return this.client;
     }
-    
-    public Session getSession(){
-        return this.session;
-    }
-    
+
     /**
      * Actualise the list of the user in a room
      * @throws RemoteException 

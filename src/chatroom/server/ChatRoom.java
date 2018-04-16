@@ -15,18 +15,18 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ChatRoom {
+class ChatRoom {
 
     private int max_connection = 10;
 
-    private Login log;
+    private final Login log;
 
-    private String name;
+    private final String name;
 
     /**
      * Hashmap containing for each session the associated client nickname
      */
-    private Map<String, Session> clients;
+    private final Map<String, Session> clients;
 
     public ChatRoom(String name, Login log) {
         this.name = name;
@@ -162,7 +162,7 @@ public class ChatRoom {
      * @param aNickname nickname verified
      * @return true if the nickname is correct
      */
-    public boolean verifyNickname(String aNickname) {
+    private boolean verifyNickname(String aNickname) {
         return !clients.containsKey(aNickname);
     }
 

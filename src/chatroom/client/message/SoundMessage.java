@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class SoundMessage extends Message {
 
-    private File sound;
+    private final File sound;
 
     public SoundMessage(File file, String nick) {
         super(file.toString(), nick);
@@ -19,7 +19,7 @@ public class SoundMessage extends Message {
         sound = file;
     }
 
-    public SoundMessage(File file, String nick, boolean priv) throws IOException {
+    public SoundMessage(File file, String nick, boolean priv) {
         super(file.toString(), nick, priv);
         //convert file to sound
         sound = file;

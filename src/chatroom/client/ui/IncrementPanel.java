@@ -6,9 +6,9 @@ import java.awt.event.ActionListener;
 /**
  * Panel containing a textfield with 2 buttons to do ++ or --
  */
-public class IncrementPanel extends JPanel {
+class IncrementPanel extends JPanel {
 
-    private JTextField text;
+    private final JTextField text;
 
     public IncrementPanel() {
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));

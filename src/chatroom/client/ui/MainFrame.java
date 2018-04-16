@@ -14,13 +14,13 @@ import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-public class MainFrame extends JFrame {
+class MainFrame extends JFrame {
 
     private static final long serialVersionUID = -7487363104762069085L;
 
-    private Client client;
+    private final Client client;
 
-    private JTabbedPane tabPane;
+    private final JTabbedPane tabPane;
 
     public MainFrame(Login log, Client c) throws RemoteException {
         super("My Cat Room");
