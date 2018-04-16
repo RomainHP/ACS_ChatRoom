@@ -18,8 +18,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +33,7 @@ public class Client {
 
     private Session session;
 
-    private final Listener listener;
+    //private final Listener listener;
 
     private final Login login;
 
@@ -45,6 +47,7 @@ public class Client {
         this.login = log;
         this.link = new HashMap();
         this.nickname_List = new HashMap();
+        //this.listener = null;
     }
 
     public void setNickname(Session ses, String nick) {
@@ -52,6 +55,13 @@ public class Client {
         this.nickname_List.put(ses, nick);
         
     }
+    
+    public void setOutput(Session ses, Display out) throws RemoteException {
+        if(this.link.containsKey(ses)){
+            this.link.get(ses).setOutput(out);
+        }
+    }
+
 
     public String getNickname(Session ses) {
         String nick = null;
@@ -61,27 +71,18 @@ public class Client {
         return nick;
     }
 
-    public void listen(String name) {
-        /*Thread t = new Thread() {
-			public void run() {
-				System.out.println("Enregistrement de l'objet.");
-				try {
-					Naming.rebind(name, (Remote) Client.this.listener);
-				} catch (RemoteException | MalformedURLException e) {
-					e.printStackTrace();
-					return;
-				}
-				System.out.println("listener operationnel.");
-			}
-		};
-		t.start();*/
+    public Listener listen(String name) {
         System.out.println("Enregistrement de l'objet.");
         try {
-            Naming.rebind(name, Client.this.listener);
+            Listener sessionListener = new ListenerImpl(new ConsoleDisplay());
+            Naming.rebind(name, (Remote) sessionListener);
             System.out.println("listener operationnel.");
+            return sessionListener;
         } catch (RemoteException | MalformedURLException e) {
             e.printStackTrace();
         }
+        return null;
+
     }
 
     /**
@@ -95,12 +96,14 @@ public class Client {
      * @throws NotBoundException
      * @throws IOException
      */
-    public void connect(String pseudo, String chat) throws MaxConnectionException,
+    public Session connect(String pseudo, String chat) throws MaxConnectionException,
             WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
         String name = Client.name_rebind + chat + "_" + pseudo;
-        this.listen(name);
+        Listener sessionListener = this.listen(name);
         String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat);
         this.session = (Session) Naming.lookup(url);
+        this.link.put(this.session, sessionListener);
+        return this.session;
     }
 
     /**
@@ -115,12 +118,14 @@ public class Client {
      * @throws NotBoundException
      * @throws IOException
      */
-    public void connect(String pseudo, String chat, int nb_MaxUsers) throws MaxConnectionException,
+    public Session connect(String pseudo, String chat, int nb_MaxUsers) throws MaxConnectionException,
             WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
         String name = Client.name_rebind + chat + "_" + pseudo;
-        this.listen(name);
+        Listener sessionListener = this.listen(name);
         String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat, nb_MaxUsers);
         this.session = (Session) Naming.lookup(url);
+        this.link.put(this.session, sessionListener);
+        return this.session;
     }
 
     /**
@@ -135,14 +140,39 @@ public class Client {
      * @throws NotBoundException
      * @throws IOException
      */
-    public void connect(String pseudo, String chat, String password) throws MaxConnectionException,
+    public Session connect(String pseudo, String chat, String password) throws MaxConnectionException,
             WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
         String name = Client.name_rebind + chat + "_" + pseudo;
-        this.listen(name);
+        Listener sessionListener = this.listen(name);
         String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat, password);
         this.session = (Session) Naming.lookup(url);
+        this.link.put(this.session, sessionListener);
+        return this.session;
     }
 
+     /**
+     * Connect the client to a chatroom
+     *
+     * @param pseudo      client nickname
+     * @param chat        chatroom he wants to connect to
+     * @param nb_MaxUsers number max of users
+     * @throws MaxConnectionException
+     * @throws WrongPasswordException
+     * @throws NicknameNotAvailableException
+     * @throws NotBoundException
+     * @throws IOException
+     */
+    public Session connect(String pseudo, String chat, String password, int nb_MaxUsers) throws MaxConnectionException,
+            WrongPasswordException, NicknameNotAvailableException, NotBoundException, IOException {
+        String name = Client.name_rebind + chat + "_" + pseudo;
+        Listener sessionListener = this.listen(name);
+        String url = "rmi://" + server_name + "/" + this.login.connect(pseudo, name, chat, password, nb_MaxUsers);
+        this.session = (Session) Naming.lookup(url);
+        this.link.put(this.session, sessionListener);
+        return this.session;
+    }
+
+    
     public void disconnect(Session aSession) throws IOException {
         if (this.link.containsKey(aSession)) {
             for (Session ses : this.link.keySet()) {
@@ -167,29 +197,26 @@ public class Client {
         }
     }
 
-    public void sendImageMessage(File aMsg) throws RemoteException, IOException {
-        if (this.session != null) {
-            Message msg = new ImageMessage(aMsg, this.nickname);
-            this.session.sendMessage(msg);
-    public void sendMessage(Session aSession, File aMsg) throws RemoteException, IOException {
+    public void sendImageMessage(Session aSession, File aMsg) throws RemoteException, IOException {
         if (this.link.containsKey(aSession)) {
             for(Session ses : this.link.keySet()){
                 if(ses.equals(aSession)){
-                    Message msg = new Message(aMsg, this.nickname_List.get(ses));
+                    Message msg = new ImageMessage(aMsg, this.nickname_List.get(ses));
                     ses.sendMessage(msg);
                 }
             }
         }
-    }
+    }    
 
-    public Session getSession(){
-    public void sendSoundMessage(File aMsg) throws RemoteException, UnsupportedAudioFileException, IOException {
-        if (this.session != null) {
-            System.out.println("Client : " + aMsg);
-            Message msg = new SoundMessage(aMsg, this.nickname);
-            System.out.println("Client : " + ((SoundMessage) msg).getSound());
-            this.session.sendMessage(msg);
-        }
+    public void sendSoundMessage(Session aSession, File aMsg) throws RemoteException, UnsupportedAudioFileException, IOException {
+        if (this.link.containsKey(aSession)) {
+            for(Session ses : this.link.keySet()){
+                if(ses.equals(aSession)){
+                    Message msg = new SoundMessage(aMsg, this.nickname_List.get(ses));
+                    ses.sendMessage(msg);
+                }
+            }
+        } 
     }
 
     public Session getSession() {
@@ -215,10 +242,19 @@ public class Client {
      * @param nickTo nickname of the user who receive the message
      * @throws IOException
      */
-    public void sendImageMessage(File aMsg, String nickTo) throws IOException, NotFoundUserException {
-        if (this.session != null) {
+    public void sendImageMessage(Session aSession, File aMsg, String nickTo) throws IOException, NotFoundUserException {
+        /*if (this.session != null) {
             Message msg = new ImageMessage(aMsg, this.nickname, true);
             this.session.sendMessage(msg, nickTo);
+        }*/
+        
+        if (this.link.containsKey(aSession)) {
+            for(Session ses : this.link.keySet()){
+                if(ses.equals(aSession)){
+                    Message msg = new ImageMessage(aMsg, this.nickname_List.get(ses));
+                    ses.sendMessage(msg, nickTo);
+                }
+            }
         }
     }
 
@@ -230,10 +266,19 @@ public class Client {
      * @throws IOException
      * @throws UnsupportedAudioFileException
      */
-    public void sendSoundMessage(File aMsg, String nickTo) throws IOException, UnsupportedAudioFileException, NotFoundUserException {
-        if (this.session != null) {
+    public void sendSoundMessage(Session aSession, File aMsg, String nickTo) throws IOException, UnsupportedAudioFileException, NotFoundUserException {
+        /*if (this.session != null) {
             Message msg = new SoundMessage(aMsg, this.nickname, true);
             this.session.sendMessage(msg, nickTo);
+        }*/
+        
+        if (this.link.containsKey(aSession)) {
+            for(Session ses : this.link.keySet()){
+                if(ses.equals(aSession)){
+                    Message msg = new SoundMessage(aMsg, this.nickname_List.get(ses));
+                    ses.sendMessage(msg, nickTo);
+                }
+            }
         }
     }
 
@@ -243,11 +288,21 @@ public class Client {
      * @param aMsg   message to send
      * @param nickTo nickname of the user who receive the message
      * @throws IOException
+     * @throws chatroom.exception.NotFoundUserException
      */
-    public void sendMessage(String aMsg, String nickTo) throws IOException, NotFoundUserException {
-        if (this.session != null) {
+    public void sendMessage(Session aSession, String aMsg, String nickTo) throws IOException, NotFoundUserException {
+        /*if (this.session != null) {
             Message msg = new Message(aMsg, this.nickname, true);
             this.session.sendMessage(msg, nickTo);
+        }*/
+        
+        if (this.link.containsKey(aSession)) {
+            for(Session ses : this.link.keySet()){
+                if(ses.equals(aSession)){
+                    Message msg = new Message(aMsg, this.nickname_List.get(ses));
+                    ses.sendMessage(msg, nickTo);
+                }
+            }
         }
     }
 

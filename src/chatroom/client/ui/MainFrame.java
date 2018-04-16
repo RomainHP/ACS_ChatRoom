@@ -2,6 +2,7 @@ package chatroom.client.ui;
 
 import chatroom.client.Client;
 import chatroom.server.Login;
+import chatroom.server.Session;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -59,16 +60,14 @@ public class MainFrame extends JFrame {
                         Component compo = tabPane.getComponentAt(index);
                         if (compo instanceof ChatPanel) {
                             try {
-                                ((ChatPanel) compo).getClient().disconnect();
+                                ((ChatPanel) compo).getClient().disconnect(client.getSession());
                             } catch (IOException e) {
-                                System.out.println(client.getSession());
                                 ExceptionPopup.showError(e);
                             }
                         } else if (compo instanceof LoginPanel) {
                             try {
-                                ((LoginPanel) compo).getClient().disconnect();
+                                ((LoginPanel) compo).getClient().disconnect(client.getSession());
                             } catch (IOException e) {
-                                System.out.println(client.getSession());
                                 ExceptionPopup.showError(e);
                             }
                         }
@@ -76,7 +75,7 @@ public class MainFrame extends JFrame {
                         tabPane.removeTabAt(index);
                     } else {
                         try {
-                            client.disconnect();
+                            client.disconnect(client.getSession());
                             System.exit(0);
                         } catch (IOException e) {
                             System.out.println(client.getSession());
@@ -102,7 +101,7 @@ public class MainFrame extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 try {
-                    client.disconnect();
+                    client.disconnect(client.getSession());
                 } catch (IOException e1) {
                     ExceptionPopup.showError(e1);
                 }
@@ -134,7 +133,7 @@ public class MainFrame extends JFrame {
      * @param title the name of the chatroom
      * @throws RemoteException
      */
-    public void changeView(LoginPanel log, String title) throws RemoteException {
+    public void changeView(LoginPanel log, String title, Session session) throws RemoteException {
         int index = 0;
         for (int i = 0; i < tabPane.getTabCount(); i++) {
             if (log.equals(tabPane.getComponentAt(i))) {
@@ -142,7 +141,7 @@ public class MainFrame extends JFrame {
             }
         }
         this.tabPane.setSelectedIndex(index);
-        this.tabPane.setComponentAt(index, new ChatPanel(title, this.client));
+        this.tabPane.setComponentAt(index, new ChatPanel(title, this.client, session));
         this.tabPane.setTitleAt(index, title);
     }
 }

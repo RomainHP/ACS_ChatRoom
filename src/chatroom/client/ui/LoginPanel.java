@@ -143,7 +143,7 @@ public class LoginPanel extends JPanel {
                 // no password
                 if (password.trim().length() == 0) {
                     if (max_users > 0) {
-                        client.connect(pseudo, chat, max_users);
+                        client.setNickname(client.connect(pseudo, chat, max_users), pseudo);
                     } else {
                         throw new IncorrectMaxUsers();
                     }
@@ -153,12 +153,12 @@ public class LoginPanel extends JPanel {
                         throw new UncorrectNameException("password");
                     }
                     if (max_users > 0) {
-                        client.connect(pseudo, chat, password, max_users);
+                        client.setNickname(client.connect(pseudo, chat, password, max_users), pseudo);
                     } else {
                         throw new IncorrectMaxUsers();
                     }
                 }
-                frame.changeView(LoginPanel.this, chat);
+                frame.changeView(LoginPanel.this, chat, client.getSession());
             } catch (MaxConnectionException | WrongPasswordException | NicknameNotAvailableException | NotBoundException | UncorrectNameException | IncorrectMaxUsers | IOException e) {
                 ExceptionPopup.showError(e);
             }

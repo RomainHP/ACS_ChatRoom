@@ -3,6 +3,7 @@ package chatroom.client.ui;
 import chatroom.client.Client;
 import chatroom.client.ui.display.MessagePanelDisplay;
 import chatroom.exception.NotFoundUserException;
+import chatroom.server.Session;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioSystem;
@@ -15,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Chat interface (display a chatroom)
@@ -27,19 +30,24 @@ public class ChatPanel extends JPanel {
     private static final long serialVersionUID = -301099811934446277L;
 
     private final Client client;
+    
+    private Session session;
+        
+    private MessagePanelDisplay chatTextArea;
 
     private final JList<String> usersList;
 
-    public ChatPanel(String name, Client client) throws RemoteException {
+    public ChatPanel(String name, Client client, Session session) throws RemoteException {
         this.setLayout(new BorderLayout());
 
         this.client = client;
+        this.session = session;
 
         JLabel lblChatroom = new JLabel("ChatRoom " + name);
         lblChatroom.setHorizontalAlignment(SwingConstants.CENTER);
         this.add(lblChatroom, BorderLayout.NORTH);
 
-        chatTextArea = new MessagePanelDisplay(this);
+         this.chatTextArea = new MessagePanelDisplay(this);
 
         JScrollPane scroll = new JScrollPane(chatTextArea);
         chatTextArea.setScrollPane(scroll);
@@ -75,9 +83,8 @@ public class ChatPanel extends JPanel {
         verticalBox.add(lblUsers);
         
         this.usersList = new JList<>(this.session.getAllUsers());
-
-        usersList = new JList<>(client.getSession().getAllUsers());
-        usersList.addMouseListener(new MouseListener() {
+        
+        this.usersList.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
@@ -102,7 +109,10 @@ public class ChatPanel extends JPanel {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     try {
-                        client.sendMessage(session, msgTextField.getText());
+                        if(usersList.isSelectionEmpty())
+                            client.sendMessage(session, msgTextField.getText());
+                        else
+                            client.sendMessage(session, msgTextField.getText(), usersList.getSelectedValue());
                         msgTextField.setText("");
                     } catch (Exception ex) {
                         ExceptionPopup.showError(ex);
@@ -118,7 +128,10 @@ public class ChatPanel extends JPanel {
         // send a message with the button
         btnSend.addActionListener((ActionEvent e) -> {
             try {
-                client.sendMessage(session, msgTextField.getText());
+                if(usersList.isSelectionEmpty())
+                    client.sendMessage(session, msgTextField.getText());
+                else
+                    client.sendMessage(session, msgTextField.getText(), usersList.getSelectedValue());
                 msgTextField.setText(""); // clean the text field
             } catch (Exception ex) {
                 ExceptionPopup.showError(ex);
@@ -139,14 +152,19 @@ public class ChatPanel extends JPanel {
             if (rVal == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = c.getSelectedFile();
                 try {
-                    client.sendMessage(session, selectedFile);
+                    if(usersList.isSelectionEmpty())
+                        client.sendImageMessage(session, selectedFile);
+                    else
+                        client.sendImageMessage(session, selectedFile, usersList.getSelectedValue());
                 } catch (IOException e1) {
                     ExceptionPopup.showError(e1);
+                } catch (NotFoundUserException ex) {
+                    ExceptionPopup.showError(ex);
                 }
             }
         });
 
-        //Send an image
+        //Send a a sound
         btnSound.addActionListener((ActionEvent e) -> {
             JFileChooser c = new JFileChooser();
             //Setting Up The Filter
@@ -161,9 +179,9 @@ public class ChatPanel extends JPanel {
                 File selectedFile = c.getSelectedFile();
                 try {
                     if (usersList.isSelectionEmpty()) {
-                        client.sendSoundMessage(selectedFile);
+                        client.sendSoundMessage(session, selectedFile);
                     } else {
-                        client.sendSoundMessage(selectedFile, usersList.getSelectedValue());
+                        client.sendSoundMessage(session, selectedFile, usersList.getSelectedValue());
                     }
                 } catch (IOException | UnsupportedAudioFileException | NotFoundUserException e1) {
                     ExceptionPopup.showError(e1);
